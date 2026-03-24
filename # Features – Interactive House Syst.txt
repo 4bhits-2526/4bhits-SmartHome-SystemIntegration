@@ -1,0 +1,228 @@
+# Features – Interactive House System
+*(derived from requirements.md)*
+
+---
+
+# 1. Overview
+
+This document describes the main system features derived from the requirements.
+Each feature references one or more requirement IDs.
+
+---
+
+# 2. Features
+
+---
+
+## F1 – Direct Light Switch Interaction
+
+Users can directly switch a room light on and off via interaction.
+
+**Linked Requirements:**  
+R2, R13, R14, R15, R16
+
+**Description:**
+The system allows users to interact with a lamp switch across all input systems (VR, tablet, PC, physical switch).
+
+---
+
+## F2 – Room State Visualization
+
+The current room state is visible across all subsystems.
+
+**Linked Requirements:**  
+R1, R17, R18, R19, R20, R44
+
+**Description:**
+Users can recognize whether a light is on or off in VR, tablet, PC and the physical model.
+
+---
+
+## F3 – OPC UA Communication Layer
+
+All subsystems exchange state information via OPC UA.
+
+**Linked Requirements:**  
+R8, R9, R10, R11, R12
+
+**Description:**
+The system uses OPC UA as a shared communication layer for reading and writing state values.
+
+---
+
+## F4 – Cross-System Synchronization
+
+A state change in one subsystem updates all others.
+
+**Linked Requirements:**  
+R5, R8, R12, R29
+
+**Description:**
+All subsystems remain synchronized regardless of where the input originates.
+
+---
+
+## F5 – Physical Model Integration
+
+The physical model acts as both input and output.
+
+**Linked Requirements:**  
+R16, R20, R24, R25
+
+**Description:**
+The cardboard house supports interaction via physical switches and displays state via LEDs.
+
+---
+
+## F6 – PC Monitoring Dashboard
+
+The PC provides a system overview.
+
+**Linked Requirements:**  
+R15, R19, R33
+
+**Description:**
+The PC application shows current states and system status, including connection feedback.
+
+---
+
+## F7 – State Model Management
+
+The system maintains a consistent and defined state model.
+
+**Linked Requirements:**  
+R27, R28, R29, R31
+
+**Description:**
+Each room has one valid state, shared across all subsystems.
+
+---
+
+## F8 – System Initialization
+
+The system starts in a defined and consistent state.
+
+**Linked Requirements:**  
+R30, R37, R38
+
+**Description:**
+All subsystems receive an initial state at system startup.
+
+---
+
+## F9 – Reset System State
+
+The system can reset all room states.
+
+**Linked Requirements:**  
+R39, R40
+
+**Description:**
+A reset action restores a predefined system state across all subsystems.
+
+---
+
+## F10 – Connection Status Feedback
+
+The system shows connection status of subsystems.
+
+**Linked Requirements:**  
+R32, R33, R36
+
+**Description:**
+Users can recognize if subsystems are connected or disconnected.
+
+---
+
+## F11 – Safe System Operation
+
+The system handles failures and invalid input safely.
+
+**Linked Requirements:**  
+R34, R35
+
+**Description:**
+The system maintains a valid state even in case of errors.
+
+---
+
+## F12 – Room Representation (VR Context)
+
+The system provides a spatial room representation.
+
+**Linked Requirements:**  
+R21, R22, R23
+
+**Description:**
+The VR system contains a room with lamp and switch positioned meaningfully.
+
+---
+
+## F13 – IO / Controller Integration
+
+The IO/Controller connects physical input and output to the system.
+
+**Linked Requirements:**  
+R24, R25, R26
+
+**Description:**
+The IO/Controller reads physical inputs and controls outputs while communicating with the OPC UA system.
+
+---
+
+## F14 – Modular Architecture
+
+Subsystems can be developed independently.
+
+**Linked Requirements:**  
+R46, R53
+
+**Description:**
+Each subsystem (VR, tablet, PC, physical) can be implemented and tested separately.
+
+---
+
+## F15 – System Extensibility
+
+The system supports adding new rooms and features.
+
+**Linked Requirements:**  
+R52, R54
+
+**Description:**
+The architecture allows scaling and extending the system.
+
+---
+
+## F16 – Engineering Traceability
+
+Requirements, features and implementation are linked.
+
+**Linked Requirements:**  
+R55, R56, R57, R58
+
+**Description:**
+The system development process is documented and traceable.
+
+---
+
+# 3. Traceability Rule
+
+Each GitHub issue must reference:
+
+- at least one feature (F#)
+- at least one requirement (R#)
+
+---
+
+# 4. Example Mapping
+
+Example:
+
+Feature: F1 – Direct Light Switch Interaction  
+→ Requirements: R2, R13, R14  
+
+Issue:
+Implement VR switch interaction  
+→ Feature: F1  
+→ Requirements: R2, R13

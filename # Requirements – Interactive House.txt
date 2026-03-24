@@ -1,0 +1,235 @@
+# Requirements – Interactive House System
+*(OPC UA – VR – Tablet – PC – Physical Model)*
+
+---
+
+# 1. Purpose
+
+The system shall demonstrate how industrial control, system communication and game engine integration work.
+The system shall support students in understanding distributed systems and system design.
+
+---
+
+# 2. User Requirements
+
+## R1 – Recognize Room State
+With the interactive house system the visitor shall be able to recognize the current state of a room (e.g. light on/off).
+
+## R2 – Direct Switch Interaction
+With the interactive system the user shall be able to switch a room light on and off by interacting directly with a lamp switch.
+
+## R3 – Receive Feedback
+With the system the user shall be able to receive feedback when a state change was successful.
+
+## R4 – Understand Cause and Effect
+With the system the visitor shall be able to understand the connection between interaction and system response.
+
+## R5 – Understand Synchronization
+With the system the visitor shall be able to perceive that a change in one subsystem affects all connected subsystems.
+
+## R6 – Analyze Communication
+With the interactive house system the student shall be able to analyze how subsystems communicate via OPC UA.
+
+## R7 – Trace State Changes
+With the system the student shall be able to trace a state change from input to output across all subsystems.
+
+---
+
+# 3. Functional Requirements
+
+## R8 – State Synchronization
+The system shall synchronize room states between all subsystems (VR, tablet, PC, physical model).
+
+## R9 – OPC UA Communication
+The system shall use OPC UA for state communication.
+
+## R10 – OPC UA Read Access
+The system shall allow clients to read room state values.
+
+## R11 – OPC UA Write Access
+The system shall allow clients to write room state values.
+
+## R12 – State Propagation
+The system shall propagate state changes to all connected subsystems.
+
+---
+
+# 4. Interaction Requirements (All Inputs)
+
+## R13 – VR Input
+The VR application shall allow the user to interact with a lamp switch.
+
+## R14 – Tablet Input
+The tablet application shall allow the user to change room states via touch input.
+
+## R15 – PC Input
+The PC application shall allow the user to change room states.
+
+## R16 – Physical Input
+The system shall allow state changes via physical switches or sensors connected to the IO/Controller.
+
+---
+
+# 5. Output Requirements (All Outputs)
+
+## R17 – VR Output
+The VR application shall display the current room state.
+
+## R18 – Tablet Output
+The tablet application shall display the current room state.
+
+## R19 – PC Output
+The PC application shall display all room states.
+
+## R20 – Physical Output
+The physical model shall display room states using LEDs or other outputs.
+
+---
+
+# 6. Room & Interaction Context
+
+## R21 – Room Representation
+The system shall provide a visual representation of a room containing lamp and switch.
+
+## R22 – Spatial Relationship
+The system shall represent the spatial relationship between interactive elements.
+
+## R23 – Interaction Context
+The system shall present interactions within a meaningful spatial context.
+
+---
+
+# 7. IO / Controller Requirements
+
+## R24 – Input Processing
+The IO/Controller shall read physical input signals (e.g. switch pressed).
+
+## R25 – Output Control
+The IO/Controller shall control physical outputs (e.g. LEDs).
+
+## R26 – System Communication
+The IO/Controller shall communicate state changes with the OPC UA system.
+
+---
+
+# 8. State Model Requirements
+
+## R27 – State Definition
+The system shall define each room light state as a binary value (on/off).
+
+## R28 – Unique State
+The system shall maintain one current state per room.
+
+## R29 – State Consistency
+The system shall ensure consistent state across all subsystems.
+
+## R30 – Initial State
+The system shall start with a defined state.
+
+## R31 – Source of Truth
+The system shall define one authoritative state source.
+
+---
+
+# 9. Error Handling Requirements
+
+## R32 – Connection Detection
+The system shall detect connection loss of subsystems.
+
+## R33 – Error Feedback
+The system shall indicate when a subsystem is disconnected.
+
+## R34 – Safe Operation
+The system shall remain in a valid state if a subsystem fails.
+
+## R35 – Invalid Input Handling
+The system shall reject invalid state values.
+
+## R36 – Reconnection Recovery
+The system shall restore valid state after reconnect.
+
+---
+
+# 10. Startup and Reset Requirements
+
+## R37 – Startup Time
+The system shall be startable within 1 minute.
+
+## R38 – Startup Sequence
+The system shall provide a defined startup sequence.
+
+## R39 – Reset Function
+The system shall allow resetting all room states.
+
+## R40 – Reset Consistency
+The system shall synchronize reset across all subsystems.
+
+---
+
+# 11. Quality Requirements
+
+## R41 – Response Time
+The system shall synchronize changes within 1 second.
+
+## R42 – Usability
+The system shall be usable without prior instruction.
+
+## R43 – Learnability
+The system shall be understandable within 30 seconds.
+
+## R44 – Visibility
+The system shall clearly visualize system states.
+
+## R45 – Stability
+The system shall operate reliably during demonstration.
+
+## R46 – Maintainability
+The system shall allow extension and testing.
+
+---
+
+# 12. Constraints
+
+## R47 – Technology Constraint
+The system shall use Unity and OPC UA.
+
+## R48 – Hardware Constraint
+The system shall run on available hardware.
+
+## R49 – Network Constraint
+The system shall operate over a local network.
+
+## R50 – Demonstration Constraint
+The system shall be suitable for TdoT.
+
+## R51 – Educational Constraint
+The system shall support teaching system design.
+
+---
+
+# 13. Extension Requirements
+
+## R52 – Scalability
+The system shall allow adding additional rooms.
+
+## R53 – Modularity
+The system shall allow independent subsystem development.
+
+## R54 – Extensibility
+The system shall allow adding additional functions.
+
+---
+
+# 14. Process Requirements
+
+## R55 – Requirements Documentation
+The project shall document requirements in markdown.
+
+## R56 – Feature Traceability
+Each feature shall reference requirements.
+
+## R57 – Implementation Traceability
+Each issue and pull request shall reference features.
+
+## R58 – Testability
+Each feature shall be testable.

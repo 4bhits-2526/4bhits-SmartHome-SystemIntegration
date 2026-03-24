@@ -1,0 +1,344 @@
+# Issues – Interactive House System
+*(derived from features.md and requirements.md)*
+
+---
+
+# Overview
+
+This document contains the initial implementation issues for the project.
+
+Each issue includes:
+- Feature reference (F#)
+- Requirement reference (R#)
+- Description
+- Acceptance Criteria
+
+---
+
+# F1 – Direct Light Switch Interaction
+
+---
+
+## Issue: VR Switch Interaction
+
+**Title:** [F1] Implement VR light switch interaction  
+
+**Linked Feature:**  
+F1 – Direct Light Switch Interaction  
+
+**Linked Requirements:**  
+R2 – Direct Switch Interaction  
+R13 – VR Input  
+
+**Description:**  
+Implement a switch in the VR scene that allows the user to toggle the light state.
+
+**Acceptance Criteria:**
+- [ ] Switch is interactable
+- [ ] Interaction toggles light state
+- [ ] Visual feedback is shown
+- [ ] State is sent to OPC UA
+
+---
+
+## Issue: Tablet Light Control
+
+**Title:** [F1] Implement tablet light control  
+
+**Linked Feature:**  
+F1 – Direct Light Switch Interaction  
+
+**Linked Requirements:**  
+R2 – Direct Switch Interaction  
+R14 – Tablet Input  
+
+**Description:**  
+Create a touch UI element to toggle the room light.
+
+**Acceptance Criteria:**
+- [ ] Button exists
+- [ ] Button toggles state
+- [ ] State is sent to OPC UA
+- [ ] UI updates correctly
+
+---
+
+## Issue: Physical Switch Input
+
+**Title:** [F1] Implement physical switch input  
+
+**Linked Feature:**  
+F1 – Direct Light Switch Interaction  
+
+**Linked Requirements:**  
+R2 – Direct Switch Interaction  
+R16 – Physical Input  
+R24 – Input Processing  
+
+**Description:**  
+Implement physical switch input via IO/Controller.
+
+**Acceptance Criteria:**
+- [ ] Physical switch is connected
+- [ ] Input is detected
+- [ ] State is updated in system
+- [ ] OPC UA is updated
+
+---
+
+# F2 – Room State Visualization
+
+---
+
+## Issue: VR Visualization
+
+**Title:** [F2] Implement VR light visualization  
+
+**Linked Feature:**  
+F2 – Room State Visualization  
+
+**Linked Requirements:**  
+R1 – Recognize Room State  
+R17 – VR Output  
+
+**Description:**  
+Display light state in VR.
+
+**Acceptance Criteria:**
+- [ ] Light changes appearance
+- [ ] Reflects system state
+- [ ] Updates in real time
+
+---
+
+## Issue: Tablet Visualization
+
+**Title:** [F2] Implement tablet state display  
+
+**Linked Feature:**  
+F2 – Room State Visualization  
+
+**Linked Requirements:**  
+R1 – Recognize Room State  
+R18 – Tablet Output  
+
+**Acceptance Criteria:**
+- [ ] State visible (color/icon)
+- [ ] Updates automatically
+- [ ] Matches system state
+
+---
+
+## Issue: Physical LED Output
+
+**Title:** [F2] Implement physical LED output  
+
+**Linked Feature:**  
+F2 – Room State Visualization  
+
+**Linked Requirements:**  
+R20 – Physical Output  
+R25 – Output Control  
+
+**Description:**  
+Control LED based on system state.
+
+**Acceptance Criteria:**
+- [ ] LED turns on/off
+- [ ] Matches system state
+- [ ] Updates immediately
+
+---
+
+# F3 – OPC UA Communication
+
+---
+
+## Issue: Setup OPC UA Server
+
+**Title:** [F3] Setup OPC UA server  
+
+**Linked Feature:**  
+F3 – OPC UA Communication Layer  
+
+**Linked Requirements:**  
+R9 – OPC UA Communication  
+R10 – OPC UA Read Access  
+
+**Acceptance Criteria:**
+- [ ] Server runs
+- [ ] Node exists
+- [ ] Value readable
+
+---
+
+## Issue: OPC UA Write
+
+**Title:** [F3] Implement OPC UA write  
+
+**Linked Feature:**  
+F3 – OPC UA Communication Layer  
+
+**Linked Requirements:**  
+R11 – OPC UA Write Access  
+
+**Acceptance Criteria:**
+- [ ] Clients can write values
+- [ ] Values update correctly
+
+---
+
+## Issue: OPC UA Read
+
+**Title:** [F3] Implement OPC UA read  
+
+**Linked Feature:**  
+F3 – OPC UA Communication Layer  
+
+**Linked Requirements:**  
+R10 – OPC UA Read Access  
+
+**Acceptance Criteria:**
+- [ ] Clients receive values
+- [ ] Updates propagate
+
+---
+
+# F4 – Cross-System Synchronization
+
+---
+
+## Issue: Synchronization
+
+**Title:** [F4] Synchronize state across systems  
+
+**Linked Feature:**  
+F4 – Cross-System Synchronization  
+
+**Linked Requirements:**  
+R8 – State Synchronization  
+R12 – State Propagation  
+R29 – State Consistency  
+
+**Acceptance Criteria:**
+- [ ] Change in VR updates all systems
+- [ ] Change on tablet updates all systems
+- [ ] Physical model updates
+- [ ] No inconsistent state
+
+---
+
+# F6 – PC Monitoring Dashboard
+
+---
+
+## Issue: PC Dashboard
+
+**Title:** [F6] Implement PC monitoring dashboard  
+
+**Linked Feature:**  
+F6 – PC Monitoring Dashboard  
+
+**Linked Requirements:**  
+R19 – PC Output  
+R33 – Error Feedback  
+
+**Acceptance Criteria:**
+- [ ] Displays room state
+- [ ] Displays connection status
+- [ ] Updates live
+
+---
+
+# F8 – System Initialization
+
+---
+
+## Issue: Initialization
+
+**Title:** [F8] Implement system initialization  
+
+**Linked Feature:**  
+F8 – System Initialization  
+
+**Linked Requirements:**  
+R30 – Initial State  
+R37 – Startup Time  
+
+**Acceptance Criteria:**
+- [ ] System starts with defined state
+- [ ] All clients receive initial state
+
+---
+
+# F9 – Reset System State
+
+---
+
+## Issue: Reset
+
+**Title:** [F9] Implement reset functionality  
+
+**Linked Feature:**  
+F9 – Reset System State  
+
+**Linked Requirements:**  
+R39 – Reset Function  
+R40 – Reset Consistency  
+
+**Acceptance Criteria:**
+- [ ] Reset button exists
+- [ ] All states reset
+- [ ] All systems update
+
+---
+
+# F10 – Connection Status Feedback
+
+---
+
+## Issue: Connection Status
+
+**Title:** [F10] Implement connection status display  
+
+**Linked Feature:**  
+F10 – Connection Status Feedback  
+
+**Linked Requirements:**  
+R32 – Connection Detection  
+R33 – Error Feedback  
+
+**Acceptance Criteria:**
+- [ ] Shows connected/disconnected
+- [ ] Updates dynamically
+
+---
+
+# F12 – Room Representation
+
+---
+
+## Issue: VR Room Setup
+
+**Title:** [F12] Create VR room with lamp and switch  
+
+**Linked Feature:**  
+F12 – Room Representation  
+
+**Linked Requirements:**  
+R21 – Room Representation  
+R22 – Spatial Relationship  
+
+**Acceptance Criteria:**
+- [ ] Room exists
+- [ ] Lamp exists
+- [ ] Switch exists
+- [ ] Logical placement
+
+---
+
+# Traceability Rule
+
+Each issue must reference:
+- at least one feature (F#)
+- at least one requirement (R#)
