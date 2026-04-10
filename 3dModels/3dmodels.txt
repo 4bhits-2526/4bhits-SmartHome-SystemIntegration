@@ -15,3 +15,5 @@ Scale kann beliebig hochgezogen werden, am Anfang ist Scale in Unity auf 1;1;1 a
 
 Wenn Code, um den Taster zu bedienen, gebraucht wird, einfach Bescheid geben! 
 
+Verfasser/Ansprechperson: Muhammed Hamzic
+
