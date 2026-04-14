@@ -15,15 +15,23 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
     private TextMeshProUGUI statusText3;
     private OpcSubscription subscription;
 
+    // Boolwerte für die Lampen
+    private bool room1Lamp1;
+    private bool room1Lamp2;
+    private bool room2Lamp1;
+    private bool room3Lamp1;
+
+    // Public Variablen
     public GameObject Switch;
-    
-    public Color normalColor = Color.white;
-    public Color pressedColor = Color.gray;
-    public Light buttonLight;
+    public int SwitchCode;
+
+    public Color LampColor = Color.yellow;
+    public Light[] Lamps;
 
 
     void Start()
     {
+        /*
         this.statusText = GameObject.Find("statusText").GetComponent<TextMeshProUGUI>();
         this.statusText4 = GameObject.Find("statusText4").GetComponent<TextMeshProUGUI>();
         this.statusText3 = GameObject.Find("statusText3").GetComponent<TextMeshProUGUI>();
@@ -32,6 +40,7 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         this.statusText4.text = "Connecting4...";
         this.statusText3.text = "Info3...";
         this.buttonLight.color = normalColor;
+        */
 
         try
         {
@@ -41,10 +50,14 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
             this.client.Connect();
             this.statusText.text = "Connected!";
 
+
             string[] nodeIds = {
+
+            /*
             "ns=6;s=::opctest:mySinValue",
             "ns=6;s=::AsGlobalPV:gSchweibsChange",
             "ns=6;s=::AsGlobalPV:gSchweibsWrite",
+            */
 
             // Room 1
             "ns=6;s=::room1:Lampe",
@@ -59,6 +72,7 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
             "ns=6;s=::room3:SwitchValueT",
             "ns=6;s=::room3:SwitchValue"
         };
+
 
             this.subscription = this.client.SubscribeNodes();
 
@@ -84,18 +98,107 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
-    
+    void Update()
+    {
+        room1Lamp1 = (bool)this.client.ReadNode("ns=6;s=::room1:Lampe").Value;
+        room1Lamp2 = (bool)this.client.ReadNode("ns=6;s=::room1:Lampe").Value;
+        room2Lamp1 = (bool)this.client.ReadNode("ns=6;s=::room2:Lampe").Value;
+        room3Lamp1 = (bool)this.client.ReadNode("ns=6;s=::room3:Lampe").Value;
+
+        if (room1Lamp1 == true)
+        {
+            if(SwitchCode == 1)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Lamps[i].enabled = true;
+                }
+            }
+        } else
+        {
+            if (SwitchCode == 1)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Lamps[i].enabled = false;
+                }
+            }
+        }
+
+        if(room1Lamp2 == true)
+        {
+            if (SwitchCode == 1)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Lamps[i].enabled = true;
+                }
+            }
+        } else
+        {
+            if (SwitchCode == 2)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    Lamps[i].enabled = false;
+                }
+            }
+        }
+
+        if (room2Lamp1 == true)
+        {
+            if (SwitchCode == 2)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    Lamps[i].enabled = true;
+                }
+            }
+        } else
+        {
+            if (SwitchCode == 2)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    Lamps[i].enabled = false;
+                }
+            }
+        }
+
+        if (room3Lamp1 == true)
+        {
+            if (SwitchCode == 3)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    Lamps[i].enabled = true;
+                }
+            }
+        } else
+        {
+            if (SwitchCode == 3)
+            {
+                for (int i = 0; i < 1; i++)
+                {
+                    Lamps[i].enabled = false;
+                }
+            }
+        }
+
+    }
+
+
     public void OnPointerDown(PointerEventData eventData)
     {
         Debug.Log("Licht AN");
         // Rotation des Lichtschalters in Unity anpassen
-    
+
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 5); // Beispielrotation, anpassen je nach Bedarf
-        buttonLight.color = pressedColor;
+        // buttonLight.color = pressedColor;
 
         try
         {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", true);
+            this.client.WriteNode("ns=6;s=::room" + SwitchCode + ":SwitchValueT", true);
         }
         catch (Exception ex)
         {
@@ -103,17 +206,17 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
-    
+
     public void OnPointerUp(PointerEventData eventData)
     {
         Debug.Log("Licht AUS");
 
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 0); // Zurück zur ursprünglichen Rotation
-        buttonLight.color = normalColor;
+        // buttonLight.color = normalColor;
 
         try
         {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", false);
+            this.client.WriteNode("ns=6;s=::room" + SwitchCode + ":SwitchValueT", false);
         }
         catch (Exception ex)
         {
