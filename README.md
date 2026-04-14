@@ -20,7 +20,6 @@ All systems are connected and share common states (e.g., light on/off).
 
 ```text
 SmartHomeProject/
-├── shared/
 ├── windows/
 ├── tablet/
 ├── vr/
@@ -30,7 +29,7 @@ SmartHomeProject/
 
 ### Platform Structure
 
-Each platform follows this structure:
+Each digital platform follows this structure:
 
 ```text
 platform/
