@@ -30,6 +30,7 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         try
         {
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
+            Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
 
             this.client.Connect();
@@ -65,7 +66,7 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Licht AN");
+        Debug.Log("Licht in Room " + roomNumber +" AN");
         // Rotation des Lichtschalters in Unity anpassen
 
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 5); // Beispielrotation, anpassen je nach Bedarf
@@ -84,7 +85,7 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Licht AUS");
+        Debug.Log("Licht in Room " + roomNumber +" AUS");
 
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 0); // Zurück zur ursprünglichen Rotation
         // buttonLight.color = normalColor;

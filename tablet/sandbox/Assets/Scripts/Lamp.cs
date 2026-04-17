@@ -17,7 +17,9 @@ public class Lamp : MonoBehaviour
         try
         {
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
+            Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
+            
 
             this.client.Connect();
             Debug.Log("Connected to OPC UA server!");
