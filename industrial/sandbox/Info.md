@@ -7,7 +7,7 @@ Das System besteht aus mehreren Eingangsquellen, die über unterschiedliche Wege
 ## Komponenten
 
 ### 1. Digitale Clients (über OPC UA)
-
+**ZU SEHEN IN ABBILDUNG 1.1**
 Folgende Geräte senden ihre Signale über jeweils einen eigenen OPC UA Server:
 
 - **Tablet (Android)** → OPC UA
