@@ -70,20 +70,16 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
 
     public void OnPointerDown(PointerEventData eventData)
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         Debug.Log("Licht AN");
-=======
+
+        Debug.Log("Licht in Room " + roomNumber +" AN");
+        
         Debug.Log("Licht in Room " + roomNumber +" AN");
         // Rotation des Lichtschalters in Unity anpassen
->>>>>>> 684a8609d9d90e2c7281b84aab1881663ffc9cfb
-=======
-        Debug.Log("Licht in Room " + roomNumber +" AN");
-        // Rotation des Lichtschalters in Unity anpassen
-=======
+
         Debug.Log("Licht AN");
->>>>>>> a0c1c57ef5e2d8e81b09fead6146913130a139dd
->>>>>>> 846ce839bcf236f159c45fa9eb35f72d444b35a1
+
 
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
 
