@@ -545,6 +545,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4706146665922265264}
   - component: {fileID: 4890351747198001758}
+  - component: {fileID: 8301324382578747014}
   m_Layer: 0
   m_Name: Room3Light1
   m_TagString: Untagged
@@ -632,6 +633,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &8301324382578747014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563544668828427931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee5b44090832f24594f6063db567fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomNumber: 3
 --- !u!1 &4647357278956489318
 GameObject:
   m_ObjectHideFlags: 0
@@ -642,6 +656,7 @@ GameObject:
   m_Component:
   - component: {fileID: 694625846073897440}
   - component: {fileID: 7104333825571249143}
+  - component: {fileID: 5435257980774327543}
   m_Layer: 0
   m_Name: Room2Light1
   m_TagString: Untagged
@@ -729,6 +744,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &5435257980774327543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4647357278956489318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee5b44090832f24594f6063db567fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomNumber: 2
 --- !u!1 &5340023019700723446
 GameObject:
   m_ObjectHideFlags: 0
@@ -1137,6 +1165,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6291274630681202131}
   - component: {fileID: 7567384937018124204}
+  - component: {fileID: 7572745163545913168}
   m_Layer: 0
   m_Name: Room1Light2
   m_TagString: Untagged
@@ -1224,6 +1253,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &7572745163545913168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450222237333071208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee5b44090832f24594f6063db567fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomNumber: 1
 --- !u!1 &8002310927932083059
 GameObject:
   m_ObjectHideFlags: 0
@@ -1343,6 +1385,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4001287446366150300}
   - component: {fileID: 6426060573213119448}
+  - component: {fileID: 8089483759611141634}
   m_Layer: 0
   m_Name: Room1Light1
   m_TagString: Untagged
@@ -1430,6 +1473,19 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!114 &8089483759611141634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8401239368070039879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ee5b44090832f24594f6063db567fc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomNumber: 1
 --- !u!1 &8486707309083327350
 GameObject:
   m_ObjectHideFlags: 0
@@ -1594,39 +1650,34 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5458750546335074836}
+      addedObject: {fileID: 5048480034552452273}
   m_SourcePrefab: {fileID: 100100000, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
 --- !u!4 &119546208538380836 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
   m_PrefabInstance: {fileID: 524805833140220283}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &816128212756236280 stripped
+--- !u!1 &6595425772696996419 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
+  m_CorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
   m_PrefabInstance: {fileID: 524805833140220283}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5458750546335074836
+--- !u!114 &5048480034552452273
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 816128212756236280}
+  m_GameObject: {fileID: 6595425772696996419}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2d3efba5ccf234a4d88710aeb4560f03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Switch: {fileID: 6595425772696996419}
-  roomNumber: 0
---- !u!1 &6595425772696996419 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
-  m_PrefabInstance: {fileID: 524805833140220283}
-  m_PrefabAsset: {fileID: 0}
+  roomNumber: 3
 --- !u!1001 &2237664399713342979
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1637,7 +1688,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.9004326
+      value: -2.8927
       objectReference: {fileID: 0}
     - target: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1683,29 +1734,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5808304405123265930}
+      addedObject: {fileID: 2565701476384816742}
   m_SourcePrefab: {fileID: 100100000, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
---- !u!1 &1375501950838186112 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
-  m_PrefabInstance: {fileID: 2237664399713342979}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5808304405123265930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1375501950838186112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d3efba5ccf234a4d88710aeb4560f03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Switch: {fileID: 4882486104359185723}
-  roomNumber: 0
 --- !u!4 &1868164062865485148 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
@@ -1716,6 +1748,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
   m_PrefabInstance: {fileID: 2237664399713342979}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2565701476384816742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4882486104359185723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3efba5ccf234a4d88710aeb4560f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Switch: {fileID: 4882486104359185723}
+  roomNumber: 1
 --- !u!1001 &3055466180468529059
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1726,7 +1772,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.32456708
+      value: 0.3334
       objectReference: {fileID: 0}
     - target: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1776,29 +1822,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1931235314857196808}
+      addedObject: {fileID: 4698792232301315442}
   m_SourcePrefab: {fileID: 100100000, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
---- !u!1 &2773150962543059232 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 872295724415628931, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
-  m_PrefabInstance: {fileID: 3055466180468529059}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1931235314857196808
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2773150962543059232}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d3efba5ccf234a4d88710aeb4560f03, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Switch: {fileID: 8550337438682475675}
-  roomNumber: 0
 --- !u!4 &3208806995847490812 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 495618864630791007, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
@@ -1809,3 +1836,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6687797979613477688, guid: a536ddc0e0adf6345a4ff94dabe5430e, type: 3}
   m_PrefabInstance: {fileID: 3055466180468529059}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4698792232301315442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8550337438682475675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d3efba5ccf234a4d88710aeb4560f03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Switch: {fileID: 8550337438682475675}
+  roomNumber: 2
