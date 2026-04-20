@@ -9,6 +9,7 @@ using TMPro;
 public class Lamp : MonoBehaviour
 {
     private OpcClient client;
+    private bool lampState;
     public int roomNumber;
 
 
@@ -35,8 +36,10 @@ public class Lamp : MonoBehaviour
     {
         try
         {
-            bool roomLampState = (bool)this.client.ReadNode("ns=6;s=::room " + this.roomNumber + ":Lampe").Value;
-            enabled = roomLampState;
+            bool roomLampState = (bool)this.client.ReadNode("ns=6;s=::room " + roomNumber + ":Lampe").Value;
+            lampState = roomLampState;
+            this.enabled = lampState;
+
         }
         catch (Exception ex)
         {
