@@ -2,40 +2,95 @@
 
 ## Beschreibung
 
-Das System besteht aus mehreren Eingangsquellen, die über unterschiedliche Wege in eine zentrale Logik (ODER-Verknüpfung) geführt werden. Das Ergebnis steuert anschließend unseren Smart Home.
+Das System besteht aus mehreren Eingangsquellen, die über unterschiedliche Wege in eine zentrale Logik (**ODER-Verknüpfung**) geführt werden.  
+Das Ergebnis steuert anschließend Aktoren im Smart Home (z. B. Lampen).
+
+Folgende Eingangsquellen sind integriert:
+
+- Physische Schalter (analog / Hardware)
+- Tablet-Anwendung (Android)
+- VR-Anwendung (Android)
+- Laptop / Windows-Anwendung
+
+Alle Eingaben werden über verschiedene Kommunikationswege (z. B. OPC UA, HTTP/WebRequests oder lokale Schnittstellen) an die zentrale Logik übermittelt.
+
+Ein zentrales Ziel des Systems ist die **plattformübergreifende Synchronisation**:  
+Wird ein Zustand über eine Plattform geändert, aktualisieren sich alle anderen Plattformen automatisch.  
+Dadurch entsteht ein konsistentes Systemverhalten unabhängig vom Einstiegspunkt.
+
+---
 
 ## Komponenten
 
 ### 1. Digitale Clients (über OPC UA)
+
 **ZU SEHEN IN ABBILDUNG 1.1**
-Folgende Geräte senden ihre Signale über jeweils einen eigenen OPC UA Server:
 
-- **Tablet (Android)** → OPC UA
-- **Laptop (Windows)** → OPC UA
-- **VR-System (Android)** → OPC UA
+Folgende Geräte senden ihre Signale an die zentrale Logik:
 
-Jeder dieser Clients kommuniziert unabhängig über OPC UA mit der zentralen Logik. Zusätzlich sind werden auch Lan Kabeln angeschlossen.
+- **Tablet (Android)** → Kommunikation über HTTP/WebRequests oder OPC UA Gateway  
+- **Laptop (Windows)** → OPC UA Client  
+- **VR-System (Android)** → Kommunikation über HTTP/WebRequests oder Middleware  
 
-### 2. Analoge / Hardware-Eingänge
+> Hinweis: Ein nativer OPC UA Server auf Android-Geräten ist in der Regel nicht praktikabel.  
+> Daher erfolgt die Anbindung über alternative Schnittstellen oder Gateways.
 
-- **Analog / Hardware**
-  - Direkte Einspeisung in die zentrale Logik
-  - Kein OPC UA erforderlich
+Alle Clients kommunizieren logisch unabhängig, greifen jedoch auf dieselbe zentrale Logik zu.
+
+---
+
+
+
+### 2. Netzwerk / Kommunikation
+
+- OPC UA für industrielle / strukturierte Kommunikation  
+- HTTP/WebRequests für mobile Anwendungen  
+- LAN-Verbindungen zwischen:
+  - Zentraler Logik (z. B. SPS/Server)
+  - OPC UA Clients
+  - Optionalen Gateways
+
+---
 
 ## Logik
 
 Alle Eingänge werden in einer zentralen **ODER-Verknüpfung (OR)** zusammengeführt:
 
-- Wenn **mindestens ein Eingang aktiv ist**, wird der Ausgang aktiviert
+- Wenn **mindestens ein Eingang aktiv ist**, wird der Ausgang aktiviert  
+- Wenn **kein Eingang aktiv ist**, bleibt der Ausgang deaktiviert  
+
+### Zustandsübersicht
+
+| Eingang A | Eingang B | Eingang C | Ausgang |
+|----------|----------|----------|---------|
+| 0        | 0        | 0        | 0       |
+| 1        | 0        | 0        | 1       |
+| 0        | 1        | 0        | 1       |
+| 0        | 0        | 1        | 1       |
+| 1        | 1        | 0        | 1       |
+| 1        | 0        | 1        | 1       |
+| 0        | 1        | 1        | 1       |
+| 1        | 1        | 1        | 1       |
+
+---
 
 ## Ausgang
 
-- Das Ergebnis der ODER-Verknüpfung steuert:
-  - `!Input` (invertiertes Eingangssignal)
+Das Ergebnis der ODER-Verknüpfung steuert:
+
+- Smart-Home-Aktoren (z. B. Lampen)
+
+**Wichtig:**  
+Das Ausgangssignal ist **nicht invertiert**.  
+Eine Invertierung (`!Input`) erfolgt nur, wenn dies explizit gewünscht oder erforderlich ist.
+
+---
 
 ## Zusammenfassung
 
-- Mehrere Quellen (Software + Hardware)
-- OPC UA für digitale Geräte
-- Direkte Verbindung für Hardware
-- Zentrale OR-Logik entscheidet über das finale Eingangssignal
+- Mehrere Eingangsquellen (Software + Hardware)
+- Zentrale Verarbeitung über OR-Logik
+- OPC UA für strukturierte Kommunikation (v. a. Windows / industrielle Systeme)
+- Alternative Schnittstellen für mobile Geräte
+- Direkte Hardwareanbindung für physische Eingänge
+- Synchronisation aller Systeme für konsistentes Verhalten
