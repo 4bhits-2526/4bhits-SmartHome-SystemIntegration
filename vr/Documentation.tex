@@ -20,5 +20,19 @@ In einem  Unity projekt (Zu finden im Sandbox Folder) haben wir einen auf PC fun
 \textbf{Description:} \\
 Da OPC UA auf Standalone build nicht funktioniert, haben wir das script umgebaut, sodass Kommunikation jetzt über TCP funktioniert. 
 
+\subsection{TCP Read-Funktion (Statusabfrage)}
+
+\textbf{Description:} \
+Die Kommunikation über TCP ermöglicht das Auslesen (Read) des aktuellen Zustands der Lampen vom Industrie-Controller.
+
+Nach erfolgreicher Verbindung zum Server wird kontinuierlich auf eingehende Nachrichten gewartet. Diese werden zeilenweise empfangen und in eine Queue geschrieben, um sie im Hauptthread von Unity weiterzuverarbeiten.
+Wenn ein Read Gesendet Wird: Server antwortet mit Zustandswerten der Lampen im folgenden Format:
+
+\begin{verbatim}
+room1/Lampe1=True
+room1/Lampe2=False
+room1/Lampe3=True
+\end{verbatim}
+
 
 \end{document}
