@@ -14,8 +14,11 @@ public class TcpClientUnity : MonoBehaviour
     public Text lamp2Text;
     public Text lamp3Text;
 
+    public Toggle lamp1Toggle;
+    public Toggle lamp2Toggle;
+    public Toggle lamp3Toggle;
+
     public Button getStatusButton;
-    public Button toggleButton;
 
     private TcpClient client;
     private NetworkStream stream;
@@ -28,6 +31,8 @@ public class TcpClientUnity : MonoBehaviour
     private bool lamp2State;
     private bool lamp3State;
 
+    private bool suppressToggleEvent = false;
+
     private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
 
     async void Start()
@@ -39,8 +44,13 @@ public class TcpClientUnity : MonoBehaviour
         if (getStatusButton != null)
             getStatusButton.onClick.AddListener(RequestStatus);
 
-        if (toggleButton != null)
-            toggleButton.onClick.AddListener(SwitchLamp);
+        // Toggle Events
+        if (lamp1Toggle != null)
+            lamp1Toggle.onValueChanged.AddListener((val) => SendLampState(1, val));
+        if (lamp2Toggle != null)
+            lamp2Toggle.onValueChanged.AddListener((val) => SendLampState(2, val));
+        if (lamp3Toggle != null)
+            lamp3Toggle.onValueChanged.AddListener((val) => SendLampState(3, val));
 
         try
         {
@@ -50,9 +60,10 @@ public class TcpClientUnity : MonoBehaviour
             stream = client.GetStream();
             reader = new StreamReader(stream);
 
-            UpdateUI();
-
             _ = ReadLoop();
+
+            // initial Status holen
+            RequestStatus();
         }
         catch (Exception e)
         {
@@ -72,7 +83,6 @@ public class TcpClientUnity : MonoBehaviour
                     break;
 
                 Debug.Log("RAW: " + data);
-
                 messageQueue.Enqueue(data);
             }
         }
@@ -96,21 +106,13 @@ public class TcpClientUnity : MonoBehaviour
 
         Debug.Log("MSG: " + msg);
 
-        // ignore menu text
-        if (msg.Contains("SmartHome") || msg.Contains("Press") || msg.Contains("abort"))
-            return;
-
-        if (msg.Contains("="))
+        // nur Status-Nachrichten verarbeiten
+        if (msg.Contains("/Lampe="))
             HandleState(msg);
     }
 
     void HandleState(string msg)
     {
-        // expected:
-        // room1/Lampe1=True
-        // room1/Lampe2=False
-        // room1/Lampe3=True
-
         string[] parts = msg.Split('=');
         if (parts.Length < 2) return;
 
@@ -121,11 +123,11 @@ public class TcpClientUnity : MonoBehaviour
 
         Debug.Log($"STATE → {path} = {value}");
 
-        if (path.Contains("Lampe1"))
+        if (path.Contains("room1"))
             lamp1State = value;
-        else if (path.Contains("Lampe2"))
+        else if (path.Contains("room2"))
             lamp2State = value;
-        else if (path.Contains("Lampe3"))
+        else if (path.Contains("room3"))
             lamp3State = value;
 
         UpdateUI();
@@ -141,6 +143,18 @@ public class TcpClientUnity : MonoBehaviour
 
         if (lamp3Text != null)
             lamp3Text.text = lamp3State ? "Lampe3: EIN" : "Lampe3: AUS";
+
+        // Toggle setzen ohne Event auszulösen
+        suppressToggleEvent = true;
+
+        if (lamp1Toggle != null)
+            lamp1Toggle.SetIsOnWithoutNotify(lamp1State);
+        if (lamp2Toggle != null)
+            lamp2Toggle.SetIsOnWithoutNotify(lamp2State);
+        if (lamp3Toggle != null)
+            lamp3Toggle.SetIsOnWithoutNotify(lamp3State);
+
+        suppressToggleEvent = false;
     }
 
     public void RequestStatus()
@@ -149,10 +163,15 @@ public class TcpClientUnity : MonoBehaviour
         SendMessageToServer("R");
     }
 
-    public void SwitchLamp()
+    void SendLampState(int lamp, bool state)
     {
-        Debug.Log("SWITCH REQUEST");
-        SendMessageToServer("2");
+        if (suppressToggleEvent) return;
+
+        string value = state ? "True" : "False";
+        string msg = $"::room{lamp}:SwitchValueGL={value}";
+
+        Debug.Log("TOGGLE SEND: " + msg);
+        SendMessageToServer(msg);
     }
 
     public void SendMessageToServer(string msg)
