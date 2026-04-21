@@ -27,6 +27,8 @@ public class TabletLookController : MonoBehaviour
 
     void HandleTouchLook()
     {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(0))
+            return;
         // Nur wenn genau ein Finger auf dem Bildschirm ist
         if (Input.touchCount == 1)
         {

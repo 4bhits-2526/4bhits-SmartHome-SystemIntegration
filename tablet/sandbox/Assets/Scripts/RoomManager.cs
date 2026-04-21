@@ -29,43 +29,29 @@ public class RoomManager : MonoBehaviour
 
     private void SwitchRoom(GameObject targetRoom)
     {
-        // Kamera aus
         mainCamera.SetActive(false);
 
-        // alle Räume aus
         room1.SetActive(false);
         room2.SetActive(false);
         room3.SetActive(false);
 
-        // gewünschten Raum an
         targetRoom.SetActive(true);
         currentRoom = targetRoom;
 
-        // Canvas aus
         canvas.SetActive(false);
-
-        // 🔒 Cursor sperren (optional, falls du im Raum frei schauen willst)
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
-    private void Update()
+    // 👉 DAS IST DEIN "ZURÜCK BUTTON"
+    public void BackToMain()
     {
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            mainCamera.SetActive(true);
+        mainCamera.SetActive(true);
 
-            room1.SetActive(false);
-            room2.SetActive(false);
-            room3.SetActive(false);
+        room1.SetActive(false);
+        room2.SetActive(false);
+        room3.SetActive(false);
 
-            currentRoom = null;
+        currentRoom = null;
 
-            canvas.SetActive(true);
-
-            // ✅ FIX: Cursor wieder freigeben
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
+        canvas.SetActive(true);
     }
 }
