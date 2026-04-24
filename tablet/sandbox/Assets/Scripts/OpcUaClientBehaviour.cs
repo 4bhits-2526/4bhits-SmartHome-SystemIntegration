@@ -29,9 +29,9 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         try
         {
             // Nur fürs builden auskommentieren! Sonst fatal error auf PC
-            // string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
-            // Directory.CreateDirectory(certFolder);
-            // Environment.CurrentDirectory = certFolder;
+            string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
+            Directory.CreateDirectory(certFolder);
+            Environment.CurrentDirectory = certFolder;
 
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
             Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
