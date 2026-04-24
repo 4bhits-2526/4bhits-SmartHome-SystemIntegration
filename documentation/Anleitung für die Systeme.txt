@@ -1,6 +1,6 @@
-Für die Unity-Anwendung wird ein plattformübergreifendes Steuerungskonzept entwickelt, das sich an einem klaren Grundprinzip orientiert: Alle Nutzer sollen die Anwendung ohne technisches Vorwissen intuitiv bedienen können, unabhängig davon, ob sie ein Windows-Gerät, ein Android-Gerät oder eine VR-Umgebung verwenden. Grundlage dafür ist die Definition einheitlicher Aktionen, die auf allen Plattformen dieselbe Bedeutung haben, auch wenn die konkrete Eingabeform unterschiedlich ist.
+Für die Unity-Anwendung wird ein plattformübergreifendes Steuerungskonzept entwickelt, das sich an einem klaren Grundprinzip orientiert: Alle Nutzer sollen die Anwendung ohne technisches Vorwissen intuitiv bedienen können, unabhängig davon, ob sie ein Windows-Gerät, ein Android-Gerät oder eine VR-Umgebung verwenden
 
-Zunächst werden zentrale Aktionen festgelegt, die in der gesamten Anwendung vorkommen. Dazu gehört das Bewegen innerhalb der Umgebung, das Umsehen, das Interagieren mit diesen Objekten. Diese Aktionen sind bewusst allgemein gehalten, sodass sie sich auf alle Plattformen übertragen lassen.
+Der Core-Fokus der Anwendung liegt auf der Steuerung von Lichtquellen (Ein- und Ausschalten) in einer virtuellen Umgebung. Die Entwicklung erfolgt mit der Unity Engine, um plattformübergreifende Funktionalität zu ermöglichen. 
 
 Für Windows basiert die Steuerung auf der klassischen Kombination aus Tastatur und Maus. Die Bewegung erfolgt über die WASD-Tasten, da dieses Schema aus vielen Anwendungen bekannt ist und somit eine hohe Wiedererkennbarkeit bietet. Das Umsehen geschieht durch Bewegen der Maus. Taster werden mit einem einfachen Linksklick ein/- oder ausgeschalten.
 
