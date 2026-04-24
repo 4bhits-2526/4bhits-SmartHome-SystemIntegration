@@ -6,14 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SmartHome.unity
+    path: Assets/Resources/Scenes/SmartHome.unity
     guid: 597962ebf5cd48f4baa732a8b89d4432
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: afe79d0ca4df79245bdde9bd7f4a835a
   - enabled: 0
-    path: Assets/Scenes/OpcUaTabletFix.unity
+    path: Assets/Resources/Scenes/OpcUaTabletFix.unity
     guid: 37cdc5431e71aad4c936ad074eebe1e7
+  - enabled: 0
+    path: Assets/Scenes/CameraTestScene.unity
+    guid: 00c7ea31c25b9b54f8b7f7691a8024d7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0

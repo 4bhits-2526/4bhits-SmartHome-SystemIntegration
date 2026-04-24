@@ -459,6 +459,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmartHome
       objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.8867
+      objectReference: {fileID: 0}
     - target: {fileID: 2604585771722532055, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: m_Camera
       value: 
