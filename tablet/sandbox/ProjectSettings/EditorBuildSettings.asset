@@ -14,9 +14,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/OpcUaTabletFix.unity
     guid: 37cdc5431e71aad4c936ad074eebe1e7
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CameraTestScene.unity
     guid: 00c7ea31c25b9b54f8b7f7691a8024d7
+  - enabled: 1
+    path: Assets/Resources/Scenes/CameraTestScene.unity
+    guid: 1d8e84f8c947d214fbb23e084dc842a7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0
