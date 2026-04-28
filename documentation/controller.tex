@@ -1,0 +1,119 @@
+\section{Industriesteuerung / Controller}
+
+Die Industriesteuerung stellt die zentrale Einheit des Systems dar. 
+Sie verarbeitet sämtliche eingehenden Signale von den verschiedenen Plattformen (Tablet, Laptop, VR) sowie den physischen Schaltern und steuert darauf basierend die Ausgänge, wie beispielsweise die Beleuchtung im Modellhaus. 
+Die Kommunikation zwischen den Systemkomponenten erfolgt über eine OPC-UA-Schnittstelle.
+
+\subsection{Hardware-Konfiguration}
+
+Die Steuerung wird mit einer Versorgungsspannung von \textbf{24V DC} betrieben. 
+Die Spannungsversorgung erfolgt über eine digitale Ein- und Ausgangskarte.
+
+Die Eingänge werden zur Erfassung von Schaltsignalen verwendet, während die Ausgänge zur Ansteuerung der Verbraucher (z.B. Glühbirne) dienen.
+
+% Bild hier einfügen
+% \includegraphics[width=0.6\textwidth]{dein_bild.png}
+% \caption{Digitale Ein- und Ausgangskarte}
+
+\subsection{IO-Mapping}
+
+Das IO-Mapping definiert die Zuordnung zwischen physikalischen Ein- und Ausgängen und deren Funktion im System.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Signal} & \textbf{Adresse} & \textbf{Beschreibung} \\
+\hline
+Schalter Steckbrett & I0.0 & Manueller Lichtschalter \\
+Tablet & I0.1 & Steuerung über Tablet \\
+Laptop & I0.2 & Steuerung über PC-Anwendung \\
+VR-Headset & I0.3 & Steuerung über VR \\
+\hline
+Lampe & Q0.0 & Ausgang zur Glühbirne \\
+\hline
+\end{tabular}
+\caption{IO-Mapping der Steuerung}
+\end{table}
+
+\subsection{Ethernet-Konfiguration}
+
+Die Industriesteuerung ist über Ethernet mit dem Netzwerk verbunden. 
+Dadurch wird die Kommunikation mit externen Anwendungen ermöglicht.
+
+Die IP-Adresse der Steuerung wird statisch konfiguriert, sodass eine stabile Verbindung zu den Clients gewährleistet ist. 
+Über das Netzwerk können Befehle empfangen sowie Zustände zurückgemeldet werden.
+
+\subsection{OPC UA Konfiguration}
+
+Für die Kommunikation zwischen Steuerung und den verschiedenen Plattformen wird das \textbf{OPC UA Protokoll} verwendet.
+
+OPC UA ermöglicht:
+\begin{itemize}
+    \item Plattformunabhängige Kommunikation
+    \item Echtzeit-Datenübertragung
+    \item Synchronisierung zwischen allen Systemen
+\end{itemize}
+
+Die Steuerung fungiert hierbei als Server, während die Anwendungen (Tablet, Laptop, VR) als Clients agieren.
+
+\subsection{User-Konfiguration}
+
+Für den Zugriff auf die Steuerung werden Benutzer angelegt. 
+Diese ermöglichen eine kontrollierte Verbindung über OPC UA.
+
+Typische Einstellungen:
+\begin{itemize}
+    \item Benutzername und Passwort
+    \item Zugriffsrechte auf Variablen
+\end{itemize}
+
+\subsection{OPC UA Daten pro Raum}
+
+Für jeden Raum wird eine eigene Datenstruktur definiert, um die Zustände der Lampen zu verwalten.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Variable} & \textbf{Bedeutung} \\
+\hline
+Licht\_Kueche & Status der Lampe (0 = aus, 1 = ein) \\
+Licht\_Wohnzimmer & Status der Lampe \\
+Licht\_Schlafzimmer & Status der Lampe \\
+\hline
+\end{tabular}
+\caption{OPC UA Variablen pro Raum}
+\end{table}
+
+\subsection{Programm pro Raum}
+
+Die Logik der Steuerung basiert auf einer ODER-Verknüpfung der Eingänge. 
+Das bedeutet, dass die Lampe eingeschaltet wird, sobald eines der Eingangssignale aktiv ist.
+
+\subsubsection{Logikbeschreibung}
+
+Die Lampe wird aktiviert, wenn mindestens eine der folgenden Bedingungen erfüllt ist:
+\begin{itemize}
+    \item Schalter betätigt
+    \item Signal von Tablet
+    \item Signal von Laptop
+    \item Signal vom VR-Headset
+\end{itemize}
+
+\subsubsection{Beispielhafte Implementierung}
+
+\begin{verbatim}
+IF (Schalter OR Tablet OR Laptop OR VR) THEN
+    Lampe := TRUE;
+ELSE
+    Lampe := FALSE;
+END_IF
+\end{verbatim}
+
+Zusätzlich wird eine positive Flankenerkennung verwendet, um nur auf Zustandsänderungen zu reagieren und unerwünschte Mehrfachschaltungen zu vermeiden.
+
+\subsection{Zusammenfassung}
+
+Die Industriesteuerung übernimmt die zentrale Verarbeitung aller Eingangssignale und sorgt für eine konsistente Ansteuerung der Ausgänge. 
+Durch die Verwendung von OPC UA wird eine stabile und plattformübergreifende Kommunikation zwischen realem Modell und digitalen Anwendungen gewährleistet.
