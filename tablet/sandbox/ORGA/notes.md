@@ -2,24 +2,13 @@
 
 ## Konzept Erweiterung
 
-### Anzeige für Stromverbrauch
-
-### Reasoning für Tablet - Use
-
-### Fehlerfindung - und Erkennung
-
-### Dekoration Räume
-
-__Requirements__:
-
-- Dekoration muss auf allen Plattformen (Tablet, VR, Windows) gleich sein
 
 
 ---
 
 # Bereich: AICV
 
-Dekkoration muss auf allen Platformen gleich sein
+### Fehlerfindung - und Erkennung
 
 Fehler finden(Debug in der Applikation)
 
@@ -43,6 +32,7 @@ kW/h = 0,30€
 
     - Genaue Zeit wann die Lampe an/aus gemacht wurde
     - Wie lange die Lampe gelaufen ist
+        - Sende eine Benachrichtigung wenn die lampe länger als x Minuten an ist
     
 
 
@@ -50,7 +40,13 @@ kW/h = 0,30€
 
 # Bereich: OBEE
 
-    - Sende eine Benachrichtigung wenn die lampe länger als x Minuten an ist
+### Reasoning für Tablet - Use
+
+### Dekoration Räume
+
+__Requirements__:
+
+- Dekoration muss auf allen Plattformen (Tablet, VR, Windows) gleich sein
 
 ### Historie
 
