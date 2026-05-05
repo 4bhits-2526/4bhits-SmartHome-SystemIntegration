@@ -4,8 +4,7 @@
 \usepackage[german]{babel}
 \usepackage{graphicx}
 \usepackage{geometry}
-\usepackage{graphicx}
-
+\usepackage{booktabs}
 
 \geometry{margin=2.5cm}
 
@@ -17,37 +16,41 @@
 
 \maketitle
 
+\tableofcontents
+\newpage
+
 \section{Projektbeschreibung}
 
-Bei unserem Smart-Home-Projekt geht es hauptsächlich um die Steuerung von Lampen eines Modellhauses über unterschiedliche Plattformen (Windows, Tablet – Android, VR – Android) mittels einer Industriesteuerung.
+Bei unserem Smart-Home-Projekt geht es um die Steuerung von Lampen eines Modellhauses über unterschiedliche Plattformen (Windows, Tablet – Android, VR – Android) mittels einer Industriesteuerung.
 
-Die Lampen werden über Schalter in den einzelnen Räumen bedient und können ein- bzw. ausgeschaltet werden. Die Industriesteuerung übernimmt dabei die zentrale Rolle, da sie für die tatsächliche Ansteuerung der Hardware zuständig ist.
+Die Lampen werden über Schalter in den einzelnen Räumen bedient. Diese ermöglichen das Ein- und Ausschalten der Beleuchtung. Die Industriesteuerung übernimmt dabei die zentrale Rolle, da sie für die tatsächliche Ansteuerung der Hardware verantwortlich ist.
 
-Unity dient zur Entwicklung der digitalen Varianten des Smart Homes. Zusätzlich existiert ein reales, gebautes Karton-Modell. Über die Ausgänge der Steuerung können Lampen geschaltet werden, wodurch das Licht sowohl im realen Modell als auch in Unity ein- und ausgeschaltet werden kann.
+Unity wird als Entwicklungsumgebung zur Erstellung der digitalen Varianten des Smart Homes verwendet. Zusätzlich existiert ein reales, gebautes Karton-Modell. Über die Ausgänge der Steuerung können Lampen geschaltet werden, wodurch das Licht sowohl im realen Modell als auch in Unity ein- und ausgeschaltet werden kann.
 
 \section{Funktionsweise}
 
-Unity dient in diesem Projekt als Entwicklungsumgebung für ein virtuelles Modell des Hauses, in dem ebenfalls Lampen integriert sind.
+Unity dient als Entwicklungsumgebung für ein virtuelles Modell des Hauses, in dem ebenfalls Lampen integriert sind.
 
-Wenn in Unity eine Lampe durch Betätigung eines Schalters eingeschaltet wird, wird ein Signal an die Industriesteuerung gesendet. Diese verarbeitet den Befehl und schaltet anschließend die Lampe auf allen Plattformen ein.
+Wird in Unity eine Lampe durch Betätigung eines Schalters eingeschaltet, wird ein Signal an die Industriesteuerung gesendet. Diese verarbeitet den Befehl und schaltet anschließend die Lampe auf allen Plattformen ein.
 
-Zusätzlich wird der aktuelle Zustand der Lampe zurück an die Anwendungen übertragen. Dadurch ist auf allen Plattformen sichtbar, ob eine Lampe gerade ein- oder ausgeschaltet ist.
+Zusätzlich wird der aktuelle Zustand der Lampe an die Anwendungen zurückgemeldet. Dadurch ist auf allen Plattformen jederzeit ersichtlich, ob eine Lampe ein- oder ausgeschaltet ist.
 
 \section{Systemintegration}
 
 Durch diese Kombination entsteht eine Verbindung zwischen virtueller Simulation und realer Steuerung.
 
-Die Industriesteuerung sorgt für eine stabile und zuverlässige Kontrolle sowie für die Kommunikation mit der Hardware. Unity dient als Entwicklungsumgebung für die Anwendungen auf den unterschiedlichen Plattformen.
+Die Industriesteuerung sorgt für eine stabile und zuverlässige Verarbeitung der Signale sowie für die Kommunikation mit der Hardware. Unity dient als Entwicklungsumgebung für die Anwendungen auf den unterschiedlichen Plattformen.
 
 Die Apps übernehmen die Visualisierung und ermöglichen die Bedienung des digitalen Zwillings. Dadurch wird gezeigt, wie verschiedene Systeme und Plattformen miteinander interagieren können.
 
 \section{Aufbau der Hardware}
-\begin{figure}[h]
+
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{image02.png}
-\caption{Layout für Stromversorgung/Schalter}
+\caption{Layout für Stromversorgung und Schalter}
+\label{fig:strom}
 \end{figure}
-
 
 \subsection{Schritt 1: Stromversorgung}
 
@@ -57,7 +60,7 @@ Die Stromversorgung erfolgt über:
     \item GND (blaues Kabel)
 \end{itemize}
 
-Die Verkabelung erfolgt entsprechend des vorgegebenen Layouts.
+Die Verkabelung erfolgt entsprechend des in Abbildung \ref{fig:strom} dargestellten Layouts.
 
 \subsection{Schritt 2: Lichtschalter}
 
@@ -86,22 +89,157 @@ Die Steuerung basiert auf mehreren Eingängen:
     \item Tablet
     \item Laptop
     \item VR-Headset
-    \item Physischer Schalter (analog)
+    \item Physischer Schalter
 \end{itemize}
 
-Zwischen den Eingängen und der Ausgabe wird eine logische ODER-Verknüpfung verwendet.
+Zwischen den Eingängen und dem Ausgang wird eine logische ODER-Verknüpfung implementiert. 
+Dies bedeutet, dass die Lampe aktiviert wird, sobald mindestens einer der Eingänge ein Signal liefert.
 
-Zusätzlich erfolgt die Kommunikation über eine OPC-UA-Schnittstelle.
+Zusätzlich wird eine positive Flankenerkennung eingesetzt. 
+Dadurch wird sichergestellt, dass nur Zustandsänderungen verarbeitet werden und keine mehrfachen Schaltvorgänge durch dauerhaft anliegende Signale entstehen.
 
-Am Ausgang befindet sich der Verbraucher, in diesem Fall eine Glühbirne. Dabei wird auf die positive Flanke des Signals geachtet, um das Schalten korrekt auszulösen.
+Die Kommunikation erfolgt über eine OPC-UA-Schnittstelle.
 
-
-
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{image01.png}
 \caption{Digitale Ein- und Ausgangskarte}
-
+\label{fig:digital}
 \end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{image03.jpg}
+\caption{Analoge Eingänge der Steuerung}
+\label{fig:analog}
+\end{figure}
+
+Die verwendete Hardware ist in Abbildung \ref{fig:digital} und \ref{fig:analog} dargestellt.
+
+Die zuvor beschriebene Logik wird in der Industriesteuerung umgesetzt. 
+Im folgenden Kapitel wird die konkrete Konfiguration und Implementierung des Controllers detailliert beschrieben.
+
+\section{Industriesteuerung / Controller}
+
+Die Industriesteuerung stellt die zentrale Einheit des Systems dar. 
+Sie verarbeitet sämtliche eingehenden Signale von den verschiedenen Plattformen sowie den physischen Schaltern und steuert darauf basierend die Ausgänge, wie beispielsweise die Beleuchtung im Modellhaus. 
+
+\subsection{Hardware-Konfiguration}
+
+Die Steuerung wird mit einer Versorgungsspannung von \textbf{24V DC} betrieben. 
+Die Spannungsversorgung erfolgt über eine digitale Ein- und Ausgangskarte.
+
+Die Eingänge dienen zur Erfassung von Schaltsignalen, während die Ausgänge zur Ansteuerung der Verbraucher verwendet werden.
+
+\subsection{IO-Mapping}
+
+Das IO-Mapping definiert die Zuordnung zwischen physikalischen Ein- und Ausgängen und deren Funktion im System.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccc}
+\toprule
+Signal & Adresse & Beschreibung \\
+\midrule
+Schalter Steckbrett & I0.0 & Manueller Lichtschalter \\
+Tablet & I0.1 & Steuerung über Tablet \\
+Laptop & I0.2 & Steuerung über PC-Anwendung \\
+VR-Headset & I0.3 & Steuerung über VR \\
+Lampe & Q0.0 & Ausgang zur Glühbirne \\
+\bottomrule
+\end{tabular}
+\caption{IO-Mapping der Steuerung}
+\end{table}
+
+\subsection{Ethernet-Konfiguration}
+
+Die Industriesteuerung ist über Ethernet mit dem Netzwerk verbunden. 
+Die IP-Adresse wird statisch konfiguriert, um eine stabile Kommunikation mit den Clients sicherzustellen.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{image04.png}
+\caption{Ethernet-Konfiguration}
+\label{fig:eth}
+\end{figure}
+
+\subsection{OPC UA Konfiguration}
+
+Für die Kommunikation zwischen Steuerung und den Plattformen wird das OPC-UA-Protokoll verwendet.
+
+Dieses ermöglicht:
+\begin{itemize}
+    \item plattformunabhängige Kommunikation
+    \item Echtzeit-Datenübertragung
+    \item Synchronisierung zwischen allen Systemen
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{image06.png}
+\caption{Ethernet-Konfiguration}
+\label{fig:eth}
+\end{figure}
+
+Die Steuerung fungiert als Server, während die Anwendungen als Clients agieren.
+
+\subsection{User-Konfiguration}
+
+Für den Zugriff auf die Steuerung werden Benutzer eingerichtet. 
+Diese dienen der Absicherung der Kommunikation.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.6\textwidth]{image05.png}
+\caption{Ethernet-Konfiguration}
+\label{fig:eth}
+\end{figure}
+\subsection{OPC UA Daten pro Raum}
+
+Für jeden Raum werden eigene Variablen definiert, um den Zustand der Lampen zu verwalten.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cc}
+\toprule
+Variable & Bedeutung \\
+\midrule
+Licht\_Kueche & Status der Lampe (0 = aus, 1 = ein) \\
+Licht\_Wohnzimmer & Status der Lampe \\
+Licht\_Schlafzimmer & Status der Lampe \\
+\bottomrule
+\end{tabular}
+\caption{OPC UA Variablen pro Raum}
+\end{table}
+
+\subsection{Programm pro Raum}
+
+Die Steuerungslogik basiert auf einer ODER-Verknüpfung der Eingangssignale.
+
+\subsubsection{Logikbeschreibung}
+
+Die Lampe wird aktiviert, wenn mindestens einer der Eingänge aktiv ist:
+\begin{itemize}
+    \item physischer Schalter
+    \item Tablet
+    \item Laptop
+    \item VR-Headset
+\end{itemize}
+
+\subsubsection{Beispielhafte Implementierung}
+
+\begin{verbatim}
+IF (Schalter OR Tablet OR Laptop OR VR) THEN
+    Lampe := TRUE;
+ELSE
+    Lampe := FALSE;
+END_IF
+\end{verbatim}
+
+Zusätzlich wird eine positive Flankenerkennung verwendet, um nur auf Zustandsänderungen zu reagieren.
+
+\subsection{Zusammenfassung}
+
+Die Industriesteuerung übernimmt die zentrale Verarbeitung aller Eingangssignale und sorgt für eine konsistente Ansteuerung der Ausgänge. 
+Durch die Verwendung von OPC UA wird eine stabile und plattformübergreifende Kommunikation zwischen realem Modell und digitalen Anwendungen gewährleistet.
 
 \end{document}
