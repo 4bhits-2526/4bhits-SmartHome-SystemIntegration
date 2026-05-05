@@ -1,0 +1,48 @@
+# Notes
+
+## Konzept Erweiterung
+
+### Anzeige für Stromverbrauch
+
+### Reasoning für Tablet - Use
+
+### Fehlerfindung - und Erkennung
+
+### Dekoration Räume
+
+__Requirements__:
+
+- Dekoration muss auf allen Plattformen (Tablet, VR, Windows) gleich sein
+
+
+---
+
+# Bereich: AICV
+
+Dekkoration muss auf allen Platformen gleich sein
+
+Fehler finden(Debug in der Applikation)
+
+Lampe -> herausgedreht -> Lampe an, aber nicht drinnen -> System kann Fehler erkennen
+
+
+# Bereich : WAGG
+
+
+## Stromverbrauch:
+Lampe: 24V / 3W
+
+kW/h = 0,30€
+
+0,00000025€ pro Sekunde -> Wird hochgezählt 
+
+
+# Bereich: SPAV
+
+# Bereich: OBEE
+
+### Historie
+
+## Anzeige wann welche Lampe gelaufen ist.
+
+    - Genaue Zeit wann die Lampe an/aus gemacht wurde
