@@ -50,6 +50,8 @@ kW/h = 0,30€
 
 # Bereich: OBEE
 
+    - Sende eine Benachrichtigung wenn die lampe länger als x Minuten an ist
+
 ### Historie
 
 
