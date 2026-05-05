@@ -21,7 +21,7 @@ public class TcpClientUnity : MonoBehaviour
     public Button getStatusButton;
 
     [Header("Lamp GameObjects")]
-    public GameObject[] lampObjects; // assign size 3 in Inspector
+    public GameObject[] lampObjects;
 
     private TcpClient client;
     private NetworkStream stream;
@@ -29,7 +29,7 @@ public class TcpClientUnity : MonoBehaviour
 
     private bool runClient = true;
 
-    // Lamp states
+    // ✅ REAL states from server
     private bool lamp1State;
     private bool lamp2State;
     private bool lamp3State;
@@ -47,7 +47,6 @@ public class TcpClientUnity : MonoBehaviour
         if (getStatusButton != null)
             getStatusButton.onClick.AddListener(RequestStatus);
 
-        // Toggle Events
         if (lamp1Toggle != null)
             lamp1Toggle.onValueChanged.AddListener((val) => SendLampState(1, val));
         if (lamp2Toggle != null)
@@ -108,7 +107,8 @@ public class TcpClientUnity : MonoBehaviour
 
         Debug.Log("MSG: " + msg);
 
-        if (msg.Contains("/Lampe="))
+        // ✅ FIXED condition
+        if (msg.Contains("SwitchValueGL"))
             HandleState(msg);
     }
 
@@ -156,7 +156,7 @@ public class TcpClientUnity : MonoBehaviour
 
         suppressToggleEvent = false;
 
-        // Sync GameObjects with lamp states
+        // Sync GameObjects
         if (lampObjects != null && lampObjects.Length >= 3)
         {
             if (lampObjects[0] != null)
@@ -168,6 +168,26 @@ public class TcpClientUnity : MonoBehaviour
             if (lampObjects[2] != null)
                 lampObjects[2].SetActive(lamp3State);
         }
+    }
+
+    // ✅ Toggle uses ONLY server state
+    public void ToggleLamp(int lamp)
+    {
+        bool currentState = false;
+
+        switch (lamp)
+        {
+            case 1: currentState = lamp1State; break;
+            case 2: currentState = lamp2State; break;
+            case 3: currentState = lamp3State; break;
+            default:
+                Debug.LogWarning("Invalid lamp index");
+                return;
+        }
+
+        bool newState = !currentState;
+
+        SendLampState(lamp, newState);
     }
 
     public void RequestStatus()
@@ -183,7 +203,7 @@ public class TcpClientUnity : MonoBehaviour
         string value = state ? "True" : "False";
         string msg = $"::room{lamp}:SwitchValueGL={value}";
 
-        Debug.Log("TOGGLE SEND: " + msg);
+        Debug.Log("SEND: " + msg);
         SendMessageToServer(msg);
     }
 
@@ -199,8 +219,6 @@ public class TcpClientUnity : MonoBehaviour
         {
             byte[] data = Encoding.ASCII.GetBytes(msg + "\n");
             stream.Write(data, 0, data.Length);
-
-            Debug.Log("SEND: " + msg);
         }
         catch (Exception e)
         {

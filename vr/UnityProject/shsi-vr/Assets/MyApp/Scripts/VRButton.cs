@@ -5,6 +5,9 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 [RequireComponent(typeof(XRSimpleInteractable))]
 public class VRButton : MonoBehaviour
 {
+    public TcpClientUnity tcpClient;
+    public int lampIndex; // 1, 2, or 3
+
     XRSimpleInteractable m_Interactable;
 
     void Awake()
@@ -40,6 +43,7 @@ public class VRButton : MonoBehaviour
 
     public void OnPress()
     {
-        Debug.Log("VR Button Pressed!");
+        if (tcpClient != null)
+            tcpClient.ToggleLamp(lampIndex);
     }
 }
