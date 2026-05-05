@@ -20,6 +20,9 @@ public class TcpClientUnity : MonoBehaviour
 
     public Button getStatusButton;
 
+    [Header("Lamp GameObjects")]
+    public GameObject[] lampObjects; // assign size 3 in Inspector
+
     private TcpClient client;
     private NetworkStream stream;
     private StreamReader reader;
@@ -62,7 +65,6 @@ public class TcpClientUnity : MonoBehaviour
 
             _ = ReadLoop();
 
-            // initial Status holen
             RequestStatus();
         }
         catch (Exception e)
@@ -106,7 +108,6 @@ public class TcpClientUnity : MonoBehaviour
 
         Debug.Log("MSG: " + msg);
 
-        // nur Status-Nachrichten verarbeiten
         if (msg.Contains("/Lampe="))
             HandleState(msg);
     }
@@ -144,7 +145,6 @@ public class TcpClientUnity : MonoBehaviour
         if (lamp3Text != null)
             lamp3Text.text = lamp3State ? "Lampe3: EIN" : "Lampe3: AUS";
 
-        // Toggle setzen ohne Event auszulösen
         suppressToggleEvent = true;
 
         if (lamp1Toggle != null)
@@ -155,6 +155,19 @@ public class TcpClientUnity : MonoBehaviour
             lamp3Toggle.SetIsOnWithoutNotify(lamp3State);
 
         suppressToggleEvent = false;
+
+        // Sync GameObjects with lamp states
+        if (lampObjects != null && lampObjects.Length >= 3)
+        {
+            if (lampObjects[0] != null)
+                lampObjects[0].SetActive(lamp1State);
+
+            if (lampObjects[1] != null)
+                lampObjects[1].SetActive(lamp2State);
+
+            if (lampObjects[2] != null)
+                lampObjects[2].SetActive(lamp3State);
+        }
     }
 
     public void RequestStatus()
