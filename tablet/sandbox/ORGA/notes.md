@@ -39,10 +39,17 @@ kW/h = 0,30€
 
 # Bereich: SPAV
 
+# Anzeige wann welche Lampe gelaufen ist.
+
+    - Genaue Zeit wann die Lampe an/aus gemacht wurde
+    - Wie lange die Lampe gelaufen ist
+    
+
+
+
+
 # Bereich: OBEE
 
 ### Historie
 
-## Anzeige wann welche Lampe gelaufen ist.
 
-    - Genaue Zeit wann die Lampe an/aus gemacht wurde
