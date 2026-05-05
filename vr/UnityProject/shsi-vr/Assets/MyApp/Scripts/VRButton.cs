@@ -7,6 +7,11 @@ public class VRButton : MonoBehaviour
 {
     XRSimpleInteractable m_Interactable;
 
+    public GameObject SwitchOn;
+    public GameObject SwitchOff;
+
+    bool isOn = false;
+
     void Awake()
     {
         m_Interactable = GetComponent<XRSimpleInteractable>();
@@ -40,6 +45,22 @@ public class VRButton : MonoBehaviour
 
     public void OnPress()
     {
+        isOn = !isOn;
+
+        FlipSwitchVisual();
+
         Debug.Log("VR Button Pressed!");
+    }
+
+    void FlipSwitchVisual()
+    {
+        if (isOn) {
+            SwitchOff.SetActive(false);
+            SwitchOn.SetActive(true);
+        } else
+        {
+            SwitchOn.SetActive(false);
+            SwitchOff.SetActive(true);
+        }
     }
 }
