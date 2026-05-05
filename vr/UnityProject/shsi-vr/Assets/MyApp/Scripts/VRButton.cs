@@ -8,6 +8,11 @@ public class VRButton : MonoBehaviour
     public TcpClientUnity tcpClient;
     public int lampIndex; // 1, 2, or 3
 
+    public GameObject SwitchOn;
+    public GameObject SwitchOff;
+
+    private bool isOn = false;
+
     XRSimpleInteractable m_Interactable;
 
     void Awake()
@@ -43,7 +48,21 @@ public class VRButton : MonoBehaviour
 
     public void OnPress()
     {
+        // 🔥 Toggle local visual state
+        isOn = !isOn;
+        FlipSwitchVisual();
+
+        // 🔥 Send toggle to TCP system
         if (tcpClient != null)
             tcpClient.ToggleLamp(lampIndex);
+    }
+
+    void FlipSwitchVisual()
+    {
+        if (SwitchOn != null)
+            SwitchOn.SetActive(isOn);
+
+        if (SwitchOff != null)
+            SwitchOff.SetActive(!isOn);
     }
 }
