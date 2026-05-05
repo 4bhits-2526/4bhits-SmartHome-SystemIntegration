@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -10,92 +11,75 @@ using TMPro;
 public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private OpcClient client;
-    private TextMeshProUGUI statusText;
-    private TextMeshProUGUI statusText4;
-    private TextMeshProUGUI statusText3;
     private OpcSubscription subscription;
 
+    // Boolwerte für die Lampen
+    private bool room1Lamp1;
+    private bool room1Lamp2;
+    private bool room2Lamp1;
+    private bool room3Lamp1;
+
+    // Public Variablen
     public GameObject Switch;
-    
-    public Color normalColor = Color.white;
-    public Color pressedColor = Color.gray;
-    public Light buttonLight;
+    public int roomNumber;
 
 
     void Start()
     {
-        this.statusText = GameObject.Find("statusText").GetComponent<TextMeshProUGUI>();
-        this.statusText4 = GameObject.Find("statusText4").GetComponent<TextMeshProUGUI>();
-        this.statusText3 = GameObject.Find("statusText3").GetComponent<TextMeshProUGUI>();
-
-        this.statusText.text = "Connecting...";
-        this.statusText4.text = "Connecting4...";
-        this.statusText3.text = "Info3...";
-        this.buttonLight.color = normalColor;
-
         try
         {
+            // Nur fürs builden auskommentieren! Sonst fatal error auf PC
+            string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
+            Directory.CreateDirectory(certFolder);
+            Environment.CurrentDirectory = certFolder;
+
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
+            Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
 
             this.client.Connect();
-            this.statusText.text = "Connected!";
+
+
 
             string[] nodeIds = {
+
+            /*
             "ns=6;s=::opctest:mySinValue",
             "ns=6;s=::AsGlobalPV:gSchweibsChange",
             "ns=6;s=::AsGlobalPV:gSchweibsWrite",
+            */
 
             // Room 1
-            "ns=6;s=::room1:Lampe",
             "ns=6;s=::room1:SwitchValueT",
-            "ns=6;s=::room1:SwitchValue",
+
             // Room 2
-            "ns=6;s=::room2:Lampe",
             "ns=6;s=::room2:SwitchValueT",
-            "ns=6;s=::room2:SwitchValue",
+
             // Room 3
-            "ns=6;s=::room3:Lampe",
             "ns=6;s=::room3:SwitchValueT",
-            "ns=6;s=::room3:SwitchValue"
-        };
 
-            this.subscription = this.client.SubscribeNodes();
-
-            for (int i = 0; i < nodeIds.Length; i++)
-            {
-                var item = new OpcMonitoredItem(nodeIds[i], OpcAttribute.Value);
-                item.DataChangeReceived += HandleDataChanged;
-                item.Tag = i;
-                item.SamplingInterval = 200;
-
-                this.subscription.AddMonitoredItem(item);
-            }
-
-            this.subscription.ApplyChanges();
-            this.statusText3.text = "Subscribed!";
+            };
         }
         catch (Exception ex)
         {
             if (ex is TypeInitializationException tiex)
                 ex = tiex.InnerException;
 
-            this.statusText.text += "\n" + ex.Message;
+            Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
         }
     }
 
-    
+
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Licht AN");
-        // Rotation des Lichtschalters in Unity anpassen
-    
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 5); // Beispielrotation, anpassen je nach Bedarf
-        buttonLight.color = pressedColor;
+
+        Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
 
         try
         {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", true);
+            if (this.client != null)
+                this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", true);
         }
         catch (Exception ex)
         {
@@ -103,39 +87,20 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
-    
+
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Licht AUS");
 
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 0); // Zurück zur ursprünglichen Rotation
-        buttonLight.color = normalColor;
+        Switch.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
         try
         {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", false);
+            if (this.client != null)
+                this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", false);
         }
         catch (Exception ex)
         {
             Debug.LogError(ex.Message);
-        }
-    }
-
-    void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
-    {
-        OpcMonitoredItem item = (OpcMonitoredItem)sender;
-
-        if (item.NodeId.ToString().Contains("gSchweibsChange"))
-        {
-            this.statusText.text = e.Item.Value.Value?.ToString() ?? "null";
-        }
-        else if (item.NodeId.ToString().Contains("mySinValue"))
-        {
-            this.statusText4.text = e.Item.Value.Value?.ToString() ?? "null";
-        }
-        else
-        {
-            Debug.Log("Data Change: " + item.NodeId + " = " + e.Item.Value);
         }
     }
 

@@ -34,6 +34,7 @@
 # Visual Studio cache directory
 .vs/
 .vsconfig
+.vscode
 
 # Gradle cache directory
 .gradle/
@@ -44,6 +45,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -55,6 +57,7 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -68,7 +71,7 @@ sysinfo.txt
 mono_crash.*
 
 # Builds
-*.apk
+# .apk
 *.aab
 *.unitypackage
 *.unitypackage.meta
