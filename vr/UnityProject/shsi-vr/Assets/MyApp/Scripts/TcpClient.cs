@@ -1,9 +1,9 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,41 +29,56 @@ public class TcpClientUnity : MonoBehaviour
 
     private bool runClient = true;
 
-    // ✅ REAL states from server
     private bool lamp1State;
     private bool lamp2State;
     private bool lamp3State;
 
     private bool suppressToggleEvent = false;
 
-    private ConcurrentQueue<string> messageQueue = new ConcurrentQueue<string>();
+    private ConcurrentQueue<string> messageQueue =
+        new ConcurrentQueue<string>();
 
     async void Start()
     {
-        if (lamp1Text != null) lamp1Text.text = "Connecting...";
-        if (lamp2Text != null) lamp2Text.text = "Connecting...";
-        if (lamp3Text != null) lamp3Text.text = "Connecting...";
+        SyncLampObjects();
+        UpdateUI();
+
+        if (lamp1Text != null)
+            lamp1Text.text = "Connecting...";
+
+        if (lamp2Text != null)
+            lamp2Text.text = "Connecting...";
+
+        if (lamp3Text != null)
+            lamp3Text.text = "Connecting...";
 
         if (getStatusButton != null)
             getStatusButton.onClick.AddListener(RequestStatus);
 
         if (lamp1Toggle != null)
-            lamp1Toggle.onValueChanged.AddListener((val) => SendLampState(1, val));
+            lamp1Toggle.onValueChanged.AddListener(
+                (val) => SendLampState(1, val));
+
         if (lamp2Toggle != null)
-            lamp2Toggle.onValueChanged.AddListener((val) => SendLampState(2, val));
+            lamp2Toggle.onValueChanged.AddListener(
+                (val) => SendLampState(2, val));
+
         if (lamp3Toggle != null)
-            lamp3Toggle.onValueChanged.AddListener((val) => SendLampState(3, val));
+            lamp3Toggle.onValueChanged.AddListener(
+                (val) => SendLampState(3, val));
 
         try
         {
             client = new TcpClient();
+
             await client.ConnectAsync("192.168.1.61", 8000);
 
             stream = client.GetStream();
             reader = new StreamReader(stream);
 
-            _ = ReadLoop();
+            Debug.Log("TCP CONNECTED");
 
+            _ = ReadLoop();
             RequestStatus();
         }
         catch (Exception e)
@@ -83,7 +98,7 @@ public class TcpClientUnity : MonoBehaviour
                 if (data == null)
                     break;
 
-                Debug.Log("RAW: " + data);
+                Debug.Log("RAW TCP: " + data);
                 messageQueue.Enqueue(data);
             }
         }
@@ -105,100 +120,166 @@ public class TcpClientUnity : MonoBehaviour
     {
         msg = msg.Trim();
 
-        Debug.Log("MSG: " + msg);
+        if (string.IsNullOrEmpty(msg))
+            return;
 
-        // ✅ FIXED condition
-        if (msg.Contains("SwitchValueGL"))
-            HandleState(msg);
+        Debug.Log("MSG: " + msg);
+        HandleState(msg);
     }
 
     void HandleState(string msg)
     {
+        if (!TryParseStateMessage(msg, out int lampIndex, out bool value))
+            return;
+
+        Debug.Log($"STATE UPDATE -> room{lampIndex} = {value}");
+
+        ApplyLampState(lampIndex, value);
+        UpdateUI();
+    }
+
+    bool TryParseStateMessage(string msg, out int lampIndex, out bool value)
+    {
+        lampIndex = 0;
+        value = false;
+
         string[] parts = msg.Split('=');
-        if (parts.Length < 2) return;
+
+        if (parts.Length != 2)
+            return false;
 
         string path = parts[0].Trim();
         string val = parts[1].Trim();
 
-        bool value = val.Equals("True", StringComparison.OrdinalIgnoreCase);
+        if (path.Contains("room1", StringComparison.OrdinalIgnoreCase))
+            lampIndex = 1;
+        else if (path.Contains("room2", StringComparison.OrdinalIgnoreCase))
+            lampIndex = 2;
+        else if (path.Contains("room3", StringComparison.OrdinalIgnoreCase))
+            lampIndex = 3;
+        else
+            return false;
 
-        Debug.Log($"STATE → {path} = {value}");
+        if (val.Equals("True", StringComparison.OrdinalIgnoreCase))
+            value = true;
+        else if (val.Equals("False", StringComparison.OrdinalIgnoreCase))
+            value = false;
+        else
+            return false;
 
-        if (path.Contains("room1"))
-            lamp1State = value;
-        else if (path.Contains("room2"))
-            lamp2State = value;
-        else if (path.Contains("room3"))
-            lamp3State = value;
+        return true;
+    }
 
-        UpdateUI();
+    void ApplyLampState(int lampIndex, bool value)
+    {
+        switch (lampIndex)
+        {
+            case 1:
+                lamp1State = value;
+                break;
+
+            case 2:
+                lamp2State = value;
+                break;
+
+            case 3:
+                lamp3State = value;
+                break;
+
+            default:
+                return;
+        }
+
+        SyncLampObjects();
+    }
+
+    void SyncLampObjects()
+    {
+        SetLampObjectState(0, lamp1State);
+        SetLampObjectState(1, lamp2State);
+        SetLampObjectState(2, lamp3State);
+    }
+
+    void SetLampObjectState(int arrayIndex, bool state)
+    {
+        if (lampObjects == null ||
+            lampObjects.Length <= arrayIndex ||
+            lampObjects[arrayIndex] == null)
+        {
+            return;
+        }
+
+        lampObjects[arrayIndex].SetActive(state);
     }
 
     void UpdateUI()
     {
         if (lamp1Text != null)
-            lamp1Text.text = lamp1State ? "Lampe1: EIN" : "Lampe1: AUS";
+            lamp1Text.text =
+                lamp1State ? "Lampe1: EIN"
+                           : "Lampe1: AUS";
 
         if (lamp2Text != null)
-            lamp2Text.text = lamp2State ? "Lampe2: EIN" : "Lampe2: AUS";
+            lamp2Text.text =
+                lamp2State ? "Lampe2: EIN"
+                           : "Lampe2: AUS";
 
         if (lamp3Text != null)
-            lamp3Text.text = lamp3State ? "Lampe3: EIN" : "Lampe3: AUS";
+            lamp3Text.text =
+                lamp3State ? "Lampe3: EIN"
+                           : "Lampe3: AUS";
 
         suppressToggleEvent = true;
 
         if (lamp1Toggle != null)
             lamp1Toggle.SetIsOnWithoutNotify(lamp1State);
+
         if (lamp2Toggle != null)
             lamp2Toggle.SetIsOnWithoutNotify(lamp2State);
+
         if (lamp3Toggle != null)
             lamp3Toggle.SetIsOnWithoutNotify(lamp3State);
 
         suppressToggleEvent = false;
-
-        // Sync GameObjects
-        if (lampObjects != null && lampObjects.Length >= 3)
-        {
-            if (lampObjects[0] != null)
-                lampObjects[0].SetActive(lamp1State);
-
-            if (lampObjects[1] != null)
-                lampObjects[1].SetActive(lamp2State);
-
-            if (lampObjects[2] != null)
-                lampObjects[2].SetActive(lamp3State);
-        }
     }
 
-    // ✅ Toggle uses ONLY server state
     public void ToggleLamp(int lamp)
     {
         bool currentState = false;
 
         switch (lamp)
         {
-            case 1: currentState = lamp1State; break;
-            case 2: currentState = lamp2State; break;
-            case 3: currentState = lamp3State; break;
+            case 1:
+                currentState = lamp1State;
+                break;
+
+            case 2:
+                currentState = lamp2State;
+                break;
+
+            case 3:
+                currentState = lamp3State;
+                break;
+
             default:
                 Debug.LogWarning("Invalid lamp index");
                 return;
         }
 
         bool newState = !currentState;
-
         SendLampState(lamp, newState);
     }
 
     public void RequestStatus()
     {
-        Debug.Log("STATUS REQUEST");
+        Debug.Log("REQUEST STATUS");
         SendMessageToServer("R");
     }
 
     void SendLampState(int lamp, bool state)
     {
-        if (suppressToggleEvent) return;
+        if (suppressToggleEvent)
+            return;
 
         string value = state ? "True" : "False";
         string msg = $"::room{lamp}:SwitchValueGL={value}";
@@ -211,7 +292,7 @@ public class TcpClientUnity : MonoBehaviour
     {
         if (client == null || !client.Connected)
         {
-            Debug.LogWarning("Not connected");
+            Debug.LogWarning("TCP NOT CONNECTED");
             return;
         }
 
