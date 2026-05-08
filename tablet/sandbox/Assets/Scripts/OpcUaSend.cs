@@ -7,6 +7,20 @@ public class OpcUaSend : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public OpcUaClientBehaviour opcUaClient;
 
+
+    void Start()
+    {
+        try
+        {
+            opcUaClient.GetClient().Connect();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
+        }
+    }
+
+
     public void OnPointerDown(PointerEventData eventData)
     {
 

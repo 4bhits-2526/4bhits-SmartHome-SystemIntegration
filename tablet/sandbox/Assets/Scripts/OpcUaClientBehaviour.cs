@@ -74,6 +74,11 @@ public class OpcUaClientBehaviour : MonoBehaviour
         return this.client;
     }
 
+    public OpcSubscription GetSubscription()
+    {
+        return this.subscription;
+    }
+
 
 
 // --------------------------------------------------------------------------------

@@ -6,26 +6,19 @@ using Opc.UaFx.Client;
 
 public class Lamp : MonoBehaviour
 {
-    private OpcClient client;
-    private OpcSubscription subscription;
+    private OpcUaClientBehaviour opcUaClient;
 
     public int roomNumber;
 
-    // ZIEHE HIER IM INSPECTOR DIE GRAFIK/DAS LICHT DEINER LAMPE REIN
     public GameObject lampVisual;
 
     void Start()
     {
         try
         {
-            this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
-            // Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
-            this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
-
-            this.client.Connect();
-            Debug.Log("Connected to OPC UA server!");
-
-            this.subscription = this.client.SubscribeDataChange(
+            opcUaClient.GetClient().Connect();
+            OpcSubscription subscription = opcUaClient.GetSubscription();
+            subscription = opcUaClient.GetClient().SubscribeDataChange(
                 "ns=6;s=::room" + roomNumber + ":Lampe",
                 OnLampValueChanged
             );
@@ -71,9 +64,9 @@ public class Lamp : MonoBehaviour
     // GANZ WICHTIG: Verbindung sauber trennen, wenn das Spiel beendet wird!
     void OnApplicationQuit()
     {
-        if (this.client != null)
+        if (this.opcUaClient.GetClient() != null)
         {
-            this.client.Disconnect();
+            this.opcUaClient.GetClient().Disconnect();
         }
     }
 }
