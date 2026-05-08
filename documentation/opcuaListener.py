@@ -1,167 +1,210 @@
 import asyncio
 import threading
 import tkinter as tk
-from tkinter import Toplevel
+from tkinter import ttk, Toplevel
 from datetime import datetime
 from asyncua import Client
 import json
 import os
 
-# -------------------------------------------------
-# OPC UA
-# -------------------------------------------------
+# =========================================================
+# CONFIG
+# =========================================================
 
 URL = "opc.tcp://192.168.1.61:4840"
 
+SAVE_FILE = "selected_channels.json"
+LOG_FILE = "tracking_log.txt"
+
 channels = {}
 on_times = {}
-
-# gespeicherte Auswahl
-SAVE_FILE = "selected_channels.json"
-
-# checkboxen
 checkboxes = {}
-
-# ausgewählte channels
 selected_channels = []
 
-# -------------------------------------------------
-# LOAD SAVED
-# -------------------------------------------------
+# =========================================================
+# LOAD SAVED CHANNELS
+# =========================================================
 
 if os.path.exists(SAVE_FILE):
 
-    with open(SAVE_FILE, "r") as f:
-
-        try:
+    try:
+        with open(SAVE_FILE, "r") as f:
             selected_channels = json.load(f)
-        except:
-            selected_channels = []
 
-# -------------------------------------------------
-# GUI
-# -------------------------------------------------
+    except:
+        selected_channels = []
+
+# =========================================================
+# ROOT WINDOW
+# =========================================================
 
 root = tk.Tk()
-root.title("B&R OPC UA Live Monitor")
-root.geometry("900x600")
+root.title("B&R OPC UA Monitor")
+root.geometry("1100x700")
+root.configure(bg="#111827")
 
-status = tk.Label(root, text="Starting...", font=("Arial", 12))
-status.pack()
+style = ttk.Style()
+style.theme_use("clam")
 
-counter_lbl = tk.Label(root, text="0 active channels", font=("Arial", 12))
-counter_lbl.pack()
+style.configure(
+    "Treeview",
+    background="#1F2937",
+    foreground="white",
+    fieldbackground="#1F2937",
+    rowheight=28,
+    borderwidth=0,
+    font=("Segoe UI", 10)
+)
 
-frame = tk.Frame(root)
-frame.pack(fill="both", expand=True)
+style.configure(
+    "Treeview.Heading",
+    background="#374151",
+    foreground="white",
+    font=("Segoe UI", 10, "bold")
+)
 
-canvas = tk.Canvas(frame)
+style.map(
+    "Treeview",
+    background=[("selected", "#2563EB")]
+)
 
-scrollbar = tk.Scrollbar(
-    frame,
+# =========================================================
+# HEADER
+# =========================================================
+
+header = tk.Frame(root, bg="#111827")
+header.pack(fill="x", pady=15)
+
+title = tk.Label(
+    header,
+    text="B&R OPC UA Live Monitor",
+    font=("Segoe UI", 20, "bold"),
+    bg="#111827",
+    fg="white"
+)
+
+title.pack()
+
+status_label = tk.Label(
+    header,
+    text="Starting...",
+    font=("Segoe UI", 11),
+    bg="#111827",
+    fg="#9CA3AF"
+)
+
+status_label.pack()
+
+# =========================================================
+# TABLE
+# =========================================================
+
+table_frame = tk.Frame(root, bg="#111827")
+table_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+columns = ("Track", "NodeID", "Value", "State", "ON Time")
+
+tree = ttk.Treeview(
+    table_frame,
+    columns=columns,
+    show="headings"
+)
+
+for col in columns:
+    tree.heading(col, text=col)
+
+tree.column("Track", width=80, anchor="center")
+tree.column("NodeID", width=550)
+tree.column("Value", width=100, anchor="center")
+tree.column("State", width=100, anchor="center")
+tree.column("ON Time", width=120, anchor="center")
+
+scroll = ttk.Scrollbar(
+    table_frame,
     orient="vertical",
-    command=canvas.yview
+    command=tree.yview
 )
 
-scrollable_frame = tk.Frame(canvas)
+tree.configure(yscrollcommand=scroll.set)
 
-scrollable_frame.bind(
-    "<Configure>",
-    lambda e: canvas.configure(
-        scrollregion=canvas.bbox("all")
+tree.pack(side="left", fill="both", expand=True)
+scroll.pack(side="right", fill="y")
+
+# =========================================================
+# BUTTONS
+# =========================================================
+
+button_frame = tk.Frame(root, bg="#111827")
+button_frame.pack(fill="x", pady=10)
+
+def modern_button(parent, text, cmd):
+
+    return tk.Button(
+        parent,
+        text=text,
+        command=cmd,
+        bg="#2563EB",
+        fg="white",
+        activebackground="#1D4ED8",
+        activeforeground="white",
+        relief="flat",
+        padx=20,
+        pady=10,
+        font=("Segoe UI", 10, "bold"),
+        cursor="hand2"
     )
-)
 
-canvas.create_window(
-    (0, 0),
-    window=scrollable_frame,
-    anchor="nw"
-)
-
-canvas.configure(
-    yscrollcommand=scrollbar.set
-)
-
-canvas.pack(
-    side="left",
-    fill="both",
-    expand=True
-)
-
-scrollbar.pack(
-    side="right",
-    fill="y"
-)
-
-# -------------------------------------------------
+# =========================================================
 # SAVE SELECTION
-# -------------------------------------------------
+# =========================================================
+
+tracked_nodes = set()
 
 def save_selection():
 
-    selected = []
-
-    for nodeid, var in checkboxes.items():
-
-        if var.get():
-            selected.append(nodeid)
-
     with open(SAVE_FILE, "w") as f:
-        json.dump(selected, f, indent=2)
+        json.dump(list(tracked_nodes), f, indent=2)
 
-# -------------------------------------------------
+# =========================================================
 # TRACK WINDOW
-# -------------------------------------------------
+# =========================================================
 
 def open_tracking():
 
     win = Toplevel(root)
 
-    win.title("Tracking Window")
-    win.geometry("700x400")
+    win.title("Live Tracking")
+    win.geometry("800x400")
+    win.configure(bg="#111827")
 
-    labels = {}
+    title = tk.Label(
+        win,
+        text="Tracked Channels",
+        font=("Segoe UI", 18, "bold"),
+        bg="#111827",
+        fg="white"
+    )
 
-    # aktuelle Auswahl laden
-    selected = []
+    title.pack(pady=15)
 
-    for nodeid, var in checkboxes.items():
+    text = tk.Text(
+        win,
+        bg="#1F2937",
+        fg="white",
+        insertbackground="white",
+        relief="flat",
+        font=("Consolas", 11)
+    )
 
-        if var.get():
-            selected.append(nodeid)
+    text.pack(fill="both", expand=True, padx=20, pady=10)
 
-    if len(selected) == 0:
-
-        lbl = tk.Label(
-            win,
-            text="No channels selected",
-            font=("Arial", 12)
-        )
-
-        lbl.pack()
-
-        return
-
-    # Labels
-    for nodeid in selected:
-
-        lbl = tk.Label(
-            win,
-            text="",
-            font=("Consolas", 11)
-        )
-
-        lbl.pack(anchor="w")
-
-        labels[nodeid] = lbl
-
-    # live update
     def update_tracking():
 
-        for nodeid in selected:
+        text.delete("1.0", tk.END)
+
+        for nodeid in tracked_nodes:
 
             val = channels.get(nodeid, 0)
-
             t = int(on_times.get(nodeid, 0))
 
             state = "OFF"
@@ -172,95 +215,42 @@ def open_tracking():
             except:
                 pass
 
-            labels[nodeid].config(
-                text=f"{nodeid} | {state} | ON Time: {t}s | Value={val}"
+            line = (
+                f"{nodeid}\n"
+                f"   Value: {val}\n"
+                f"   State: {state}\n"
+                f"   ON Time: {t}s\n\n"
             )
+
+            text.insert(tk.END, line)
 
         win.after(1000, update_tracking)
 
     update_tracking()
 
-# -------------------------------------------------
+# =========================================================
 # BUTTONS
-# -------------------------------------------------
+# =========================================================
 
-btn_frame = tk.Frame(root)
-btn_frame.pack(pady=10)
-
-save_btn = tk.Button(
-    btn_frame,
-    text="Save Selection",
-    command=save_selection
+save_btn = modern_button(
+    button_frame,
+    "Save Selection",
+    save_selection
 )
 
-save_btn.pack(side="left", padx=10)
+save_btn.pack(side="left", padx=20)
 
-track_btn = tk.Button(
-    btn_frame,
-    text="Open Tracking Window",
-    command=open_tracking
+track_btn = modern_button(
+    button_frame,
+    "Open Tracking Window",
+    open_tracking
 )
 
-track_btn.pack(side="left", padx=10)
+track_btn.pack(side="left")
 
-# -------------------------------------------------
-# LOGGING
-# -------------------------------------------------
-
-def write_log():
-
-    with open("tracking_log.txt", "a", encoding="utf-8") as f:
-
-        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        for nodeid, var in checkboxes.items():
-
-            if var.get():
-
-                val = channels.get(nodeid, 0)
-
-                t = int(on_times.get(nodeid, 0))
-
-                f.write(
-                    f"{ts} | {nodeid} | value={val} | on_time={t}s\n"
-                )
-
-# -------------------------------------------------
-# GUI UPDATE
-# -------------------------------------------------
-
-last_update = datetime.now()
-
-def update_gui():
-
-    global last_update
-
-    now = datetime.now()
-
-    delta = (now - last_update).total_seconds()
-
-    last_update = now
-
-    # zeit zählen
-    for nodeid, val in channels.items():
-
-        try:
-            if float(val) == 1:
-                on_times[nodeid] += delta
-        except:
-            pass
-
-    counter_lbl.config(
-        text=f"{len(channels)} active channels"
-    )
-
-    write_log()
-
-    root.after(1000, update_gui)
-
-# -------------------------------------------------
+# =========================================================
 # FILTER
-# -------------------------------------------------
+# =========================================================
 
 def is_valid(nodeid, name):
 
@@ -278,9 +268,28 @@ def is_valid(nodeid, name):
         "room"
     ])
 
-# -------------------------------------------------
+# =========================================================
+# LOGGING
+# =========================================================
+
+def write_log():
+
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+
+        ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        for nodeid in tracked_nodes:
+
+            val = channels.get(nodeid, 0)
+            t = int(on_times.get(nodeid, 0))
+
+            f.write(
+                f"{ts} | {nodeid} | value={val} | on_time={t}s\n"
+            )
+
+# =========================================================
 # HANDLER
-# -------------------------------------------------
+# =========================================================
 
 class Handler:
 
@@ -288,44 +297,111 @@ class Handler:
 
         try:
 
-            key = node.nodeid.to_string()
+            nodeid = node.nodeid.to_string()
 
-            channels[key] = float(val)
+            channels[nodeid] = float(val)
 
-            if key not in on_times:
-                on_times[key] = 0
+            if nodeid not in on_times:
+                on_times[nodeid] = 0
 
         except:
             pass
 
-# -------------------------------------------------
-# ADD CHANNEL GUI
-# -------------------------------------------------
+# =========================================================
+# TABLE UPDATE
+# =========================================================
 
-def add_channel(nodeid):
+last_update = datetime.now()
 
-    if nodeid in checkboxes:
-        return
+def update_gui():
 
-    var = tk.BooleanVar()
+    global last_update
 
-    # gespeicherte Auswahl laden
-    if nodeid in selected_channels:
-        var.set(True)
+    now = datetime.now()
 
-    cb = tk.Checkbutton(
-        scrollable_frame,
-        text=nodeid,
-        variable=var
+    delta = (now - last_update).total_seconds()
+
+    last_update = now
+
+    for nodeid, val in channels.items():
+
+        try:
+            if float(val) == 1:
+                on_times[nodeid] += delta
+        except:
+            pass
+
+    existing = tree.get_children()
+
+    for item in existing:
+        tree.delete(item)
+
+    for nodeid in sorted(channels.keys()):
+
+        val = channels.get(nodeid, 0)
+
+        state = "OFF"
+
+        try:
+            if float(val) == 1:
+                state = "ON"
+        except:
+            pass
+
+        tracked = "✓" if nodeid in tracked_nodes else ""
+
+        tree.insert(
+            "",
+            "end",
+            values=(
+                tracked,
+                nodeid,
+                val,
+                state,
+                f"{int(on_times.get(nodeid, 0))} s"
+            )
+        )
+
+    status_label.config(
+        text=f"{len(channels)} subscribed channels"
     )
 
-    cb.pack(anchor="w")
+    write_log()
 
-    checkboxes[nodeid] = var
+    root.after(1000, update_gui)
 
-# -------------------------------------------------
+# =========================================================
+# CLICK SELECT
+# =========================================================
+
+def on_click(event):
+
+    item = tree.identify_row(event.y)
+
+    if not item:
+        return
+
+    values_row = tree.item(item, "values")
+
+    nodeid = values_row[1]
+
+    if nodeid in tracked_nodes:
+        tracked_nodes.remove(nodeid)
+    else:
+        tracked_nodes.add(nodeid)
+
+tree.bind("<Button-1>", on_click)
+
+# =========================================================
+# ADD SAVED
+# =========================================================
+
+for n in selected_channels:
+    tracked_nodes.add(n)
+
+# =========================================================
 # BROWSER
-# -------------------------------------------------
+# =========================================================
 
 async def browse(node, sub):
 
@@ -349,25 +425,20 @@ async def browse(node, sub):
 
                     await sub.subscribe_data_change(c)
 
-                    root.after(
-                        0,
-                        lambda nid=nodeid: add_channel(nid)
-                    )
-
             await browse(c, sub)
 
         except:
             pass
 
-# -------------------------------------------------
+# =========================================================
 # OPC UA
-# -------------------------------------------------
+# =========================================================
 
 async def opcua():
 
     async with Client(url=URL, timeout=30) as client:
 
-        status.config(text="CONNECTED")
+        status_label.config(text="CONNECTED")
 
         plc = client.get_node("ns=4;i=20000")
 
@@ -377,17 +448,16 @@ async def opcua():
 
         await browse(plc, sub)
 
-        status.config(text="MONITORING")
+        status_label.config(text="MONITORING")
 
         while True:
             await asyncio.sleep(1)
 
-# -------------------------------------------------
+# =========================================================
 # THREAD
-# -------------------------------------------------
+# =========================================================
 
 def start():
-
     asyncio.run(opcua())
 
 threading.Thread(
@@ -395,9 +465,9 @@ threading.Thread(
     daemon=True
 ).start()
 
-# -------------------------------------------------
+# =========================================================
 # START
-# -------------------------------------------------
+# =========================================================
 
 update_gui()
 
