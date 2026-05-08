@@ -8,7 +8,7 @@ using Opc.UaFx;
 using Opc.UaFx.Client;
 using TMPro;
 
-public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class OpcUaClientBehaviour : MonoBehaviour
 {
     private OpcClient client;
     private OpcSubscription subscription;
@@ -69,9 +69,17 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
         }
     }
 
+    public OpcClient GetClient()
+    {
+        return this.client;
+    }
 
 
-    public void OnPointerDown(PointerEventData eventData)
+
+// --------------------------------------------------------------------------------
+
+/*   public void OnPointerDown(PointerEventData eventData)
+
     {
 
         Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
@@ -103,5 +111,5 @@ public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointer
             Debug.LogError(ex.Message);
         }
     }
-
+*/
 }
