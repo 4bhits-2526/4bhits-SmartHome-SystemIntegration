@@ -4,6 +4,8 @@ import tkinter as tk
 from tkinter import Toplevel
 from datetime import datetime
 from asyncua import Client
+import json
+import os
 
 # -------------------------------------------------
 # OPC UA
@@ -13,7 +15,28 @@ URL = "opc.tcp://192.168.1.61:4840"
 
 channels = {}
 on_times = {}
-selected = {}
+
+# gespeicherte Auswahl
+SAVE_FILE = "selected_channels.json"
+
+# checkboxen
+checkboxes = {}
+
+# ausgewählte channels
+selected_channels = []
+
+# -------------------------------------------------
+# LOAD SAVED
+# -------------------------------------------------
+
+if os.path.exists(SAVE_FILE):
+
+    with open(SAVE_FILE, "r") as f:
+
+        try:
+            selected_channels = json.load(f)
+        except:
+            selected_channels = []
 
 # -------------------------------------------------
 # GUI
@@ -33,23 +56,58 @@ frame = tk.Frame(root)
 frame.pack(fill="both", expand=True)
 
 canvas = tk.Canvas(frame)
-scrollbar = tk.Scrollbar(frame, orient="vertical", command=canvas.yview)
+
+scrollbar = tk.Scrollbar(
+    frame,
+    orient="vertical",
+    command=canvas.yview
+)
 
 scrollable_frame = tk.Frame(canvas)
 
 scrollable_frame.bind(
     "<Configure>",
-    lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    lambda e: canvas.configure(
+        scrollregion=canvas.bbox("all")
+    )
 )
 
-canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+canvas.create_window(
+    (0, 0),
+    window=scrollable_frame,
+    anchor="nw"
+)
 
-canvas.configure(yscrollcommand=scrollbar.set)
+canvas.configure(
+    yscrollcommand=scrollbar.set
+)
 
-canvas.pack(side="left", fill="both", expand=True)
-scrollbar.pack(side="right", fill="y")
+canvas.pack(
+    side="left",
+    fill="both",
+    expand=True
+)
 
-checkboxes = {}
+scrollbar.pack(
+    side="right",
+    fill="y"
+)
+
+# -------------------------------------------------
+# SAVE SELECTION
+# -------------------------------------------------
+
+def save_selection():
+
+    selected = []
+
+    for nodeid, var in checkboxes.items():
+
+        if var.get():
+            selected.append(nodeid)
+
+    with open(SAVE_FILE, "w") as f:
+        json.dump(selected, f, indent=2)
 
 # -------------------------------------------------
 # TRACK WINDOW
@@ -57,39 +115,53 @@ checkboxes = {}
 
 def open_tracking():
 
-    selected_nodes = []
+    win = Toplevel(root)
+
+    win.title("Tracking Window")
+    win.geometry("700x400")
+
+    labels = {}
+
+    # aktuelle Auswahl laden
+    selected = []
 
     for nodeid, var in checkboxes.items():
 
         if var.get():
-            selected_nodes.append(nodeid)
+            selected.append(nodeid)
 
-    if len(selected_nodes) == 0:
+    if len(selected) == 0:
+
+        lbl = tk.Label(
+            win,
+            text="No channels selected",
+            font=("Arial", 12)
+        )
+
+        lbl.pack()
+
         return
 
-    win = Toplevel(root)
-    win.title("Tracking")
-    win.geometry("600x300")
-
-    labels = {}
-
-    for nodeid in selected_nodes:
+    # Labels
+    for nodeid in selected:
 
         lbl = tk.Label(
             win,
             text="",
-            font=("Consolas", 12)
+            font=("Consolas", 11)
         )
 
         lbl.pack(anchor="w")
 
         labels[nodeid] = lbl
 
+    # live update
     def update_tracking():
 
-        for nodeid in selected_nodes:
+        for nodeid in selected:
 
             val = channels.get(nodeid, 0)
+
             t = int(on_times.get(nodeid, 0))
 
             state = "OFF"
@@ -101,20 +173,35 @@ def open_tracking():
                 pass
 
             labels[nodeid].config(
-                text=f"{nodeid} | {state} | ON Time: {t}s"
+                text=f"{nodeid} | {state} | ON Time: {t}s | Value={val}"
             )
 
         win.after(1000, update_tracking)
 
     update_tracking()
 
+# -------------------------------------------------
+# BUTTONS
+# -------------------------------------------------
+
+btn_frame = tk.Frame(root)
+btn_frame.pack(pady=10)
+
+save_btn = tk.Button(
+    btn_frame,
+    text="Save Selection",
+    command=save_selection
+)
+
+save_btn.pack(side="left", padx=10)
+
 track_btn = tk.Button(
-    root,
+    btn_frame,
     text="Open Tracking Window",
     command=open_tracking
 )
 
-track_btn.pack(pady=10)
+track_btn.pack(side="left", padx=10)
 
 # -------------------------------------------------
 # LOGGING
@@ -126,14 +213,17 @@ def write_log():
 
         ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        for nodeid in selected:
+        for nodeid, var in checkboxes.items():
 
-            val = channels.get(nodeid, 0)
-            t = int(on_times.get(nodeid, 0))
+            if var.get():
 
-            f.write(
-                f"{ts} | {nodeid} | value={val} | on_time={t}s\n"
-            )
+                val = channels.get(nodeid, 0)
+
+                t = int(on_times.get(nodeid, 0))
+
+                f.write(
+                    f"{ts} | {nodeid} | value={val} | on_time={t}s\n"
+                )
 
 # -------------------------------------------------
 # GUI UPDATE
@@ -209,7 +299,7 @@ class Handler:
             pass
 
 # -------------------------------------------------
-# GUI ADD CHANNEL
+# ADD CHANNEL GUI
 # -------------------------------------------------
 
 def add_channel(nodeid):
@@ -218,6 +308,10 @@ def add_channel(nodeid):
         return
 
     var = tk.BooleanVar()
+
+    # gespeicherte Auswahl laden
+    if nodeid in selected_channels:
+        var.set(True)
 
     cb = tk.Checkbutton(
         scrollable_frame,
@@ -228,7 +322,6 @@ def add_channel(nodeid):
     cb.pack(anchor="w")
 
     checkboxes[nodeid] = var
-    selected[nodeid] = True
 
 # -------------------------------------------------
 # BROWSER
