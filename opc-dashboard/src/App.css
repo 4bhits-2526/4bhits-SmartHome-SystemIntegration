@@ -1,0 +1,380 @@
+﻿:root {
+  color-scheme: dark;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #fcf8f8;
+  background: #05070f;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #05070f;
+  color: #f8fafc;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.app {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #111827 0%, #090b15 45%, #05070f 100%);
+  overflow-x: hidden;
+  padding-bottom: 24px;
+}
+
+.app__sidebar {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 280px;
+  padding: 20px;
+  border-radius: 32px;
+  background: rgba(15, 23, 42, 0.92);
+  transition: width 0.3s ease, transform 0.3s ease, padding 0.3s ease;
+  z-index: 1000;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
+.app__sidebar--closed {
+  width: 72px;
+  padding: 18px 12px;
+  max-height: unset;
+  overflow-y: visible;
+}
+
+.app__sidebar--closed .app__sidebar-item {
+  display: none;
+}
+
+.app__menu-button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 18px;
+  transition: transform 0.15s ease, width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.app--sidebar-open .app__menu-button {
+  width: 100%;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  justify-content: flex-start;
+  padding-left: 16px;
+  margin-bottom: 20px;
+}
+
+.app__menu-button:hover {
+  transform: scale(1.05);
+}
+
+.app--sidebar-open .app__menu-button:hover {
+  transform: none;
+}
+
+.app__sidebar-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  border-radius: 20px;
+  background: rgba(30, 41, 59, 0.76);
+  color: #cbd5e1;
+  font-size: 14px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.app__sidebar-item:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 41, 59, 0.86);
+}
+
+.app__sensor-button {
+  min-width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: transform 0.2s ease;
+  background: #334155;
+  color: #f8fafc;
+}
+
+.app__sensor-button:hover {
+  transform: translateY(-1px);
+}
+
+.app__sensor-button--active {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+.app__main {
+  padding: 28px 28px 0;
+  margin-left: 320px;
+  transition: margin-left 0.3s ease;
+}
+
+.app--sidebar-closed .app__main {
+  margin-left: 110px;
+}
+
+.app__header {
+  margin-bottom: 28px;
+}
+
+.app__title {
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #f8fafc;
+}
+
+.app__subtitle {
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+.app__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+.app__card {
+  position: relative;
+  min-height: 190px;
+  padding: 26px;
+  border-radius: 32px;
+  background: rgba(15, 23, 42, 0.92);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.app__card:hover {
+  transform: translateY(-3px);
+  background: rgba(15, 23, 42, 0.98);
+}
+
+.app__card--online {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.app__card--offline {
+  background: rgba(15, 23, 42, 0.88);
+}
+
+.app__dot {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+}
+
+.app__dot--online {
+  background: #22c55e;
+}
+
+.app__dot--offline {
+  background: #64748b;
+}
+
+.app__node {
+  margin-bottom: 12px;
+  color: #94a3b8;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.app__value {
+  font-size: clamp(36px, 4vw, 48px);
+  font-weight: 800;
+  color: #f8fafc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.app__value-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  margin-top: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: normal;
+  word-break: break-all;
+  max-width: 220px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.app__state {
+  margin-top: 10px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.app__state--online {
+  color: #38bdf8;
+}
+
+.app__state--offline {
+  color: #94a3b8;
+}
+
+.app__time {
+  margin-top: 10px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.app__hover-menu {
+  opacity: 0;
+  margin-top: 18px;
+  transition: opacity 0.25s ease;
+}
+
+.app__card:hover .app__hover-menu {
+  opacity: 1;
+}
+
+.app__detail-button {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: #0f172a;
+  color: white;
+  font-weight: 600;
+}
+
+.app__details-panel {
+  margin-top: 22px;
+}
+
+.app__toggle-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.app__toggle-button {
+  border: none;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  padding: 10px 14px;
+  min-width: 90px;
+}
+
+.app__stats-box {
+  margin-bottom: 18px;
+  border-radius: 24px;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.86);
+}
+
+.app__stat-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.app__graph-wrapper {
+  margin-top: 12px;
+}
+
+.app__graph-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.app__graph-switch {
+  border: none;
+  border-radius: 16px;
+  padding: 10px 14px;
+  background: rgba(148, 163, 184, 0.12);
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.app__graph-switch--active {
+  background: #0f172a;
+  color: white;
+}
+
+.app__graph-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 92px;
+  overflow: hidden;
+}
+
+.app__graph-bar,
+.app__line-point {
+  width: 10px;
+  border-radius: 999px;
+  transition: height 0.25s ease, background 0.25s ease;
+}
+
+.app__line-point {
+  background: #60a5fa;
+}
+
+.app__time-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+@media (max-width: 1024px) {
+  .app__sidebar {
+    position: static;
+    width: auto;
+    margin: 0 24px;
+  }
+
+  .app__main {
+    margin-left: 0;
+    padding: 20px 24px 0;
+  }
+
+  .app__grid {
+    grid-template-columns: 1fr;
+  }
+}
