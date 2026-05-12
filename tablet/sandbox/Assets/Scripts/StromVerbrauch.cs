@@ -42,7 +42,7 @@ public class EnergyManager : MonoBehaviour
     {
         if (totalCostText != null)
         {
-            totalCostText.text = total.ToString("F6") + " €";
+            totalCostText.text = total.ToString("F8") + " €";
         }
     }
 }
