@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,9 @@ public class TcpClientUnity : MonoBehaviour
     public Toggle lamp3Toggle;
 
     public Button getStatusButton;
+
+    [Header("Error Debug")]
+    [SerializeField] TMP_Text errorStatus;
 
     [Header("Lamp GameObjects")]
     public GameObject[] lampObjects;
@@ -83,6 +87,7 @@ public class TcpClientUnity : MonoBehaviour
         }
         catch (Exception e)
         {
+            errorStatus.text = GetError(e);
             Debug.LogError("CONNECT ERROR: " + e.Message);
         }
     }
@@ -104,6 +109,7 @@ public class TcpClientUnity : MonoBehaviour
         }
         catch (Exception e)
         {
+            errorStatus.text = GetError(e);
             Debug.LogError("READ ERROR: " + e.Message);
         }
     }
@@ -314,5 +320,24 @@ public class TcpClientUnity : MonoBehaviour
         reader?.Close();
         stream?.Close();
         client?.Close();
+    }
+
+    string GetError(Exception e) {
+        if (e is SocketException se) {
+            return se.SocketErrorCode switch {
+                SocketError.ConnectionRefused   => "Verbindung abgelehnt – läuft der Server?",
+                SocketError.HostNotFound        => "Host nicht gefunden – IP-Adresse prüfen.",
+                SocketError.TimedOut            => "Verbindung abgelaufen – Netzwerk prüfen.",
+                SocketError.NetworkUnreachable  => "Netzwerk nicht erreichbar.",
+                SocketError.AddressAlreadyInUse => "Port wird bereits verwendet.",
+                _ => $"Netzwerkfehler ({(int)se.SocketErrorCode}): {se.Message}"
+            };
+        }
+
+        return e switch {
+            IOException      => "Fehler im Netzwerkstream.",
+            TimeoutException => "Zeitüberschreitung bei der Verbindung.",
+            _                => "Unbekannter Fehler: " + e.Message
+        };
     }
 }
