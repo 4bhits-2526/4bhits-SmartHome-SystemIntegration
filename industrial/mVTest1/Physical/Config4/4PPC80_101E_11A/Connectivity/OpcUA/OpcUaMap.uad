@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<OpcUaSource FileVersion="9" ArVersion="J4.93">
+  <Aliases>
+    <ACLAliases>
+      <ACL Id="1">
+        <ACE RoleName="Everyone" Access="0x005F" />
+        <ACE RoleName="Administrators" Access="0x017F" />
+      </ACL>
+    </ACLAliases>
+    <EURangeViolationAliases />
+    <EURangesAliases />
+    <EngineeringUnitAliases />
+  </Aliases>
+  <DefaultView AclId="1">
+    <Module Name="&lt;Default&gt;">
+      <GlobalVariables Name="Global Variables">
+        <Variable Name="gSetVar1" />
+        <Variable Name="gVar1" />
+        <Variable Name="OPCUA_R1_Down" />
+        <Variable Name="OPCUA_R1_Up" />
+        <Variable Name="OPCUA_R2_Down" />
+        <Variable Name="OPCUA_R2_Up" />
+        <Variable Name="mV_R1_Down" />
+        <Variable Name="mV_R1_Up" />
+        <Variable Name="mV_R2_Down" />
+        <Variable Name="mV_R2_Up" />
+      </GlobalVariables>
+    </Module>
+  </DefaultView>
+</OpcUaSource>

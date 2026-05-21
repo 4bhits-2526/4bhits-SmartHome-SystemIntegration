@@ -1,0 +1,32 @@
+VAR
+	Manipulator : STRING[32];
+	SwitchValue : BOOL;
+	SwitchValueHW : BOOL;
+	SwitchValueT : BOOL;
+	SwitchValueGL : BOOL;
+	SwitchValueW : BOOL;
+	r_trig_0 : r_trig;
+	SwitchValueTrig : BOOL;
+	Lampe : BOOL;
+	r_trig_HW : r_trig;
+	r_trig_T : r_trig;
+	r_trig_GL : r_trig;
+	r_trig_W : r_trig;
+	myTaskName : STRING[32];
+	SendValue : BOOL;
+END_VAR
+VAR RETAIN
+	RoomName : STRING[32];
+	LampeRuntimeus : UDINT;
+END_VAR
+VAR
+	RTInfo_0 : RTInfo;
+	LampeNew : BOOL;
+END_VAR
+VAR RETAIN
+	LampeRT : UDINT;
+	LampeSwitchCnt : UDINT;
+END_VAR
+VAR
+	tmpString : STRING[16];
+END_VAR

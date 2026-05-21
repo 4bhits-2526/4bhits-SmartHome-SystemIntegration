@@ -1,0 +1,14 @@
+VAR_CONFIG
+	::room1:Lampe AT %QX."X20DO9322".DigitalOutput01;
+	::room2:Lampe AT %QX."X20DO9322".DigitalOutput02;
+	::room3:Lampe AT %QX."X20DO9322".DigitalOutput03;
+	myDO04 AT %QX."X20DO9322".DigitalOutput04;
+	myDO05 AT %QX."X20DO9322".DigitalOutput05;
+	myDO06 AT %QX."X20DO9322".DigitalOutput06;
+	myDO07 AT %QX."X20DO9322".DigitalOutput07;
+	myDO08 AT %QX."X20DO9322".DigitalOutput08;
+	myDO09 AT %QX."X20DO9322".DigitalOutput09;
+	myDO10 AT %QX."X20DO9322".DigitalOutput10;
+	myDO11 AT %QX."X20DO9322".DigitalOutput11;
+	myDO12 AT %QX."X20DO9322".DigitalOutput12;
+END_VAR

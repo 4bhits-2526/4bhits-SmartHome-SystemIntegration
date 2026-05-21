@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.12.6.106 FileVersion="4.9"?>
+<Hardware xmlns="http://br-automation.co.at/AS/Hardware">
+  <Module Name="6PPT50.0502-16A" Type="6PPT50.0502-16A" Version="1.3.8.0">
+    <Connection Connector="ETH2" TargetModule="X20CP3687X" TargetConnector="IF2">
+      <Cable Type="PowerlinkCable" Length="10" Version="1.0.0.3" />
+    </Connection>
+    <Parameter ID="Terminal" Value="true" />
+    <Parameter ID="PasswordVNC" Value="" />
+    <Parameter ID="PasswordCIFS" Value="" />
+    <Parameter ID="PasswordService" Value="" />
+    <Parameter ID="VncAuthentication" Value="1" />
+    <Parameter ID="VncPasswordViewOnly" Value="v" />
+    <Parameter ID="VncPasswordViewControl" Value="c" />
+  </Module>
+  <Module Name="X20AI4632" Type="X20AI4632" Version="1.3.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB12b" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11d" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20AI8321" Type="X20AI8321" Version="1.5.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB1F" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20AI8321a" Type="X20AI8321" Version="1.5.0.0" Disabled="true">
+    <Connection Connector="SS1" TargetModule="X20TB1F2" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11g" TargetConnector="SL1" />
+  </Module>
+  <Module Name="X20AO4632" Type="X20AO4632" Version="1.2.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB12c" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11e" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20AT4222" Type="X20AT4222" Version="1.4.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB12a" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11c" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20AT4222a" Type="X20AT4222" Version="1.4.0.0" Disabled="true">
+    <Connection Connector="SS1" TargetModule="X20TB12d" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11f" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20BM11" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20CP3687X" TargetConnector="IF6" />
+  </Module>
+  <Module Name="X20BM11a" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20BM11" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11b" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20BM11a" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11c" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20BM11b" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11d" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20BM11c" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11e" Type="X20BM11" Version="1.1.0.0">
+    <Connection Connector="X2X1" TargetModule="X20BM11d" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11f" Type="X20BM11" Version="1.1.0.0" Disabled="true">
+    <Connection Connector="X2X1" TargetModule="X20BM11e" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20BM11g" Type="X20BM11" Version="1.1.0.0" Disabled="true">
+    <Connection Connector="X2X1" TargetModule="X20BM11f" TargetConnector="X2X2" />
+  </Module>
+  <Module Name="X20CP3687X" Type="X20CP3687X" Version="1.6.2.0">
+    <Connector Name="IF2">
+      <Parameter ID="ActivateDevice" Value="1" />
+      <Parameter ID="HostName" Value="unity_ds_ctrl" />
+      <Parameter ID="Mode" Value="Manual" />
+      <Parameter ID="InternetAddress" Value="192.168.1.60" />
+      <Parameter ID="SubnetMask" Value="255.255.255.0" />
+      <Parameter ID="ActivateSnmp" Value="1" />
+    </Connector>
+    <Connector Name="IF3">
+      <Parameter ID="DNAConfiguration" Value="manual" />
+      <Parameter ID="EplHostName" Value="unity_ds_ctrl" />
+      <Parameter ID="CycleTime" Value="2000" />
+      <Parameter ID="HostName" Value="unity_ds_ctrl" />
+    </Connector>
+    <Parameter ID="ConfigurationID" Value="CoffeeMachine_T50_X20CP1586" />
+    <Parameter ID="Simulation" Value="1" />
+    <Parameter ID="Cyclic1Duration" Value="2000" />
+    <Parameter ID="Cyclic1Tolerance" Value="0" />
+    <Group ID="FileDevice1" />
+    <Parameter ID="FileDeviceName1" Value="USER" />
+    <Parameter ID="FileDevicePath1" Value="USER_PATH" />
+    <Parameter ID="TimeZone" Value="140" />
+    <Parameter ID="ActivateDaylightSavingTime" Value="1" />
+    <Parameter ID="EthernetHostName" Value="unity_ds_ctrl" />
+    <Parameter ID="ActivateOpcUa" Value="1" />
+    <Parameter ID="OpcUa_AuthenticationSecurityPolicy_EnableNone" Value="1" />
+    <Parameter ID="OpcUa_AuthenticationSecurityPolicy_EnableBasic128Rsa15" Value="1" />
+    <Parameter ID="OpcUaInformationModels_PV_Version" Value="2" />
+    <Parameter ID="OpcUaInformationModel_Facet" Value="0" />
+    <Parameter ID="OpcUaInformationModel_TypeInformation" Value="0" />
+    <Parameter ID="OpcUaInformationModel_BaseObjectTypeForStructures" Value="0" />
+  </Module>
+  <Module Name="X20DIF371" Type="X20DIF371" Version="1.3.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB1F1" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11a" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20DO9322" Type="X20DO9322" Version="1.5.0.0">
+    <Connection Connector="SS1" TargetModule="X20TB12" TargetConnector="SS" />
+    <Connection Connector="SL" TargetModule="X20BM11b" TargetConnector="SL1" />
+    <Parameter ID="Supervision" Value="off" />
+  </Module>
+  <Module Name="X20IF1041_1" Type="X20IF1041-1" Version="1.4.0.0">
+    <Connection Connector="SS" TargetModule="X20CP3687X" TargetConnector="SS3" />
+    <Connector Name="IF1">
+      <Parameter ID="DtmId" Value="d18db546-0812-475b-a490-bf4d722b923f" />
+    </Connector>
+    <Parameter ID="ConfigFile" Value="X20IF1041_1.dtm" />
+    <Parameter ID="ConfigModule" Value="asnxdb2" />
+    <Parameter ID="CycleTime" Value="2000" />
+  </Module>
+  <Module Name="X20IF1061_1" Type="X20IF1061-1" Version="1.9.0.0">
+    <Connection Connector="SS" TargetModule="X20CP3687X" TargetConnector="SS2" />
+    <Connector Name="IF1">
+      <Parameter ID="DtmId" Value="c5118ea9-c0ff-4573-881d-1b306d6a3640" />
+    </Connector>
+    <Parameter ID="ConfigFile" Value="X20IF1061_1.dtm" />
+    <Parameter ID="ConfigModule" Value="asnxdb1" />
+    <Parameter ID="CycleTime" Value="2000" />
+  </Module>
+  <Module Name="X20IF2181-2" Type="X20IF2181-2" Version="1.9.0.0">
+    <Connection Connector="SS" TargetModule="X20CP3687X" TargetConnector="SS1" />
+    <Connector Name="IF1">
+      <Parameter ID="EplNatSubnet" Value="192.168.102.0" />
+    </Connector>
+  </Module>
+  <Module Name="X20TB12" Type="X20TB12" Version="1.0.0.0" />
+  <Module Name="X20TB12a" Type="X20TB12" Version="1.0.0.0" />
+  <Module Name="X20TB12b" Type="X20TB12" Version="1.0.0.0" />
+  <Module Name="X20TB12c" Type="X20TB12" Version="1.0.0.0" />
+  <Module Name="X20TB12d" Type="X20TB12" Version="1.0.0.0" Disabled="true" />
+  <Module Name="X20TB1F" Type="X20TB1F" Version="1.0.0.0" />
+  <Module Name="X20TB1F1" Type="X20TB1F" Version="1.0.0.0" />
+  <Module Name="X20TB1F2" Type="X20TB1F" Version="1.0.0.0" Disabled="true" />
+</Hardware>

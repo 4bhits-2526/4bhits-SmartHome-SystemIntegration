@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<OpcUaSource FileVersion="9" ArVersion="J4.93">
+  <Aliases>
+    <ACLAliases />
+    <EURangeViolationAliases />
+    <EURangesAliases />
+    <EngineeringUnitAliases />
+  </Aliases>
+  <DefaultView>
+    <Module Name="&lt;Default&gt;">
+      <GlobalVariables Name="Global Variables">
+        <Variable Name="gSetVar1" />
+        <Variable Name="gVar1" />
+        <Variable Name="OPCUA_R1_Down" />
+        <Variable Name="OPCUA_R1_Up" />
+        <Variable Name="OPCUA_R2_Down" />
+        <Variable Name="OPCUA_R2_Up" />
+        <Variable Name="mV_R1_Down" />
+        <Variable Name="mV_R1_Up" />
+        <Variable Name="mV_R2_Down" />
+        <Variable Name="mV_R2_Up" />
+        <Variable Name="gSchweibsChange" />
+        <Variable Name="gSchweibsWrite" />
+        <Variable Name="myDO01" />
+        <Variable Name="myDO02" />
+        <Variable Name="myDO03" />
+        <Variable Name="myDO04" />
+        <Variable Name="myDO05" />
+        <Variable Name="myDO06" />
+        <Variable Name="myDO07" />
+        <Variable Name="myDO08" />
+        <Variable Name="myDO09" />
+        <Variable Name="myDO10" />
+        <Variable Name="myDO11" />
+        <Variable Name="myDO12" />
+        <Variable Name="myDO13" />
+        <Variable Name="myDO14" />
+        <Variable Name="myDO15" />
+        <Variable Name="myDO16" />
+      </GlobalVariables>
+      <Task Name="opctest">
+        <Variable Name="mySinValue" />
+        <Variable Name="mySinValueIn" />
+      </Task>
+      <Task Name="room1">
+        <Variable Name="Lampe" />
+        <Variable Name="SwitchValue" />
+        <Variable Name="SwitchValueGL" />
+        <Variable Name="SwitchValueHW" />
+        <Variable Name="SwitchValueT" />
+        <Variable Name="SwitchValueW" />
+      </Task>
+      <Task Name="room2">
+        <Variable Name="Lampe" />
+        <Variable Name="SwitchValue" />
+        <Variable Name="SwitchValueGL" />
+        <Variable Name="SwitchValueHW" />
+        <Variable Name="SwitchValueT" />
+        <Variable Name="SwitchValueW" />
+      </Task>
+      <Task Name="room3">
+        <Variable Name="Lampe" />
+        <Variable Name="SwitchValue" />
+        <Variable Name="SwitchValueGL" />
+        <Variable Name="SwitchValueHW" />
+        <Variable Name="SwitchValueT" />
+        <Variable Name="SwitchValueW" />
+      </Task>
+    </Module>
+  </DefaultView>
+</OpcUaSource>
