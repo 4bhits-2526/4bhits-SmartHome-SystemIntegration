@@ -54,43 +54,37 @@ public class StromVerbrauch : MonoBehaviour
             room3Lamps);
     }
 
-    void UpdateRoom(
-        string nodeId,
-        TMP_Text lampText,
-        TMP_Text costText,
-        int lampCount)
+    void UpdateRoom(string nodeId, TMP_Text lampText, TMP_Text costText, int lampCount)
+{
+    try
     {
-        try
-        {
-            var value = client.ReadNode(nodeId);
+        var value = client.ReadNode(nodeId);
 
-            float seconds =
-                System.Convert.ToSingle(value.Value);
+        float seconds =
+            System.Convert.ToSingle(value.Value);
 
-            // Lamp Time Text aktualisieren
-            lampText.text =
-                "Lamp Time: " +
-                seconds.ToString("F2");
+        Debug.Log("ROOM UPDATE " + nodeId + " = " + seconds);
 
-            // Kosten berechnen
-            float powerKW = 3f / 1000f;
-            float costPerSecond =
-                (powerKW / 3600f) *
-                pricePerKWh;
+        lampText.text = "LIVE: " + seconds.ToString("F2");
 
-            float totalCost =
-                costPerSecond *
-                seconds *
-                lampCount;
+        Debug.Log("TMP gesetzt: " + lampText.text);
 
-            costText.text =
-                totalCost.ToString("F6") +
-                " €";
-        }
-        catch
-        {
-            Debug.LogWarning(
-                "Fehler beim Lesen von " + nodeId);
-        }
+        float powerKW = 3f / 1000f;
+        float costPerSecond =
+            (powerKW / 3600f) *
+            pricePerKWh;
+
+        float totalCost =
+            costPerSecond *
+            seconds *
+            lampCount;
+
+        costText.text =
+            totalCost.ToString("F6") + " €";
     }
+    catch (System.Exception ex)
+    {
+        Debug.LogError(ex);
+    }
+}
 }
