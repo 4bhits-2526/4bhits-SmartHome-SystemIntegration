@@ -60,6 +60,10 @@ Alle Eingänge werden in einer zentralen **ODER-Verknüpfung (OR)** zusammengef�
 - Wenn **kein Eingang aktiv ist**, bleibt der Ausgang deaktiviert  
 
 ### Zustandsübersicht
+Eingang A ... Windows
+Eingang B ... VR
+Eingang C ... Tablet
+Eingang D ... analoge Eingänge
 
 | Eingang A | Eingang B | Eingang C | Eingang D | Ausgang |
 |----------|----------|----------|----------|---------|
