@@ -1,8 +1,11 @@
 using UnityEngine;
 using TMPro;
+using Opc.UaFx.Client;
 
 public class StromVerbrauch : MonoBehaviour
 {
+    public OpcUaClientBehaviour opcBehaviour;
+
     public TMP_Text lampText1;
     public TMP_Text lampText2;
     public TMP_Text lampText3;
@@ -13,62 +16,81 @@ public class StromVerbrauch : MonoBehaviour
 
     public float pricePerKWh = 0.30f;
 
-    // 👉 Lampen pro Raum
+    // Lampen pro Raum
     public int room1Lamps = 2;
     public int room2Lamps = 1;
     public int room3Lamps = 1;
 
-    private string lastText1;
-    private string lastText2;
-    private string lastText3;
+    private OpcClient client;
+
+    void Start()
+    {
+        if (opcBehaviour != null)
+        {
+            client = opcBehaviour.GetClient();
+        }
+    }
 
     void Update()
     {
-        if (HasChanged())
-        {
-            UpdateCosts();
-        }
+        if (client == null) return;
+
+        UpdateRoom(
+            "ns=6;s=::room1:LampeRT",
+            lampText1,
+            costText1,
+            room1Lamps);
+
+        UpdateRoom(
+            "ns=6;s=::room2:LampeRT",
+            lampText2,
+            costText2,
+            room2Lamps);
+
+        UpdateRoom(
+            "ns=6;s=::room3:LampeRT",
+            lampText3,
+            costText3,
+            room3Lamps);
     }
 
-    bool HasChanged()
+    void UpdateRoom(
+        string nodeId,
+        TMP_Text lampText,
+        TMP_Text costText,
+        int lampCount)
     {
-        return lampText1.text != lastText1 ||
-               lampText2.text != lastText2 ||
-               lampText3.text != lastText3;
-    }
-
-    public void UpdateCosts()
-    {
-        Calculate(lampText1, costText1, room1Lamps, ref lastText1);
-        Calculate(lampText2, costText2, room2Lamps, ref lastText2);
-        Calculate(lampText3, costText3, room3Lamps, ref lastText3);
-    }
-
-    void Calculate(TMP_Text input, TMP_Text output, int lampCount, ref string lastValue)
-    {
-        if (input == null || output == null) return;
-
-        string text = input.text;
-
-        if (text == lastValue) return;
-        lastValue = text;
-
         try
         {
-            float seconds = float.Parse(text.Split(':')[1].Trim());
+            var value = client.ReadNode(nodeId);
 
+            float seconds =
+                System.Convert.ToSingle(value.Value);
+
+            // Lamp Time Text aktualisieren
+            lampText.text =
+                "Lamp Time: " +
+                seconds.ToString("F2");
+
+            // Kosten berechnen
             float powerKW = 3f / 1000f;
+            float costPerSecond =
+                (powerKW / 3600f) *
+                pricePerKWh;
 
-            float costPerSecond = (powerKW / 3600f) * pricePerKWh;
+            float totalCost =
+                costPerSecond *
+                seconds *
+                lampCount;
 
-            // 👉 HIER kommt der Multiplikator rein
-            float totalCost = costPerSecond * seconds * lampCount;
-
-            output.text = totalCost.ToString("F6") + " €";
+            costText.text =
+                totalCost.ToString("F6") +
+                " €";
         }
         catch
         {
-            Debug.LogWarning("Parse Fehler: " + text);
+            Debug.LogWarning(
+                "Fehler beim Lesen von " + nodeId);
         }
     }
 }

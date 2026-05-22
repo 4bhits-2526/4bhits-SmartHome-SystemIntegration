@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class RoomManager : MonoBehaviour
 {
@@ -53,5 +55,10 @@ public class RoomManager : MonoBehaviour
         currentRoom = null;
 
         canvas.SetActive(true);
+    }
+
+    public void LoadCalcScene()
+    {
+        SceneManager.LoadScene("LampTimeCalc");
     }
 }
