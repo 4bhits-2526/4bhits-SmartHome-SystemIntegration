@@ -1,50 +1,49 @@
 using UnityEngine;
-using System;
-using Opc.UaFx;
-using Opc.UaFx.Client;
-using UnityEngine.Events;
-
 
 public class Lamp : MonoBehaviour
 {
-    private OpcUaClientBehaviour opcUaClient;
-
+    // Die Zuweisung kann im Unity Editor erfolgen (via Drag & Drop)
+    public OpcUaClientBehaviour opcUaClient; 
     public int roomNumber;
-
     public GameObject lampVisual;
 
-    private void OnLampValueChanged(object sender, OpcDataChangeReceivedEventArgs e)
+    void Start()
     {
-        try
+        // Wir abonnieren das Event des Central Clients
+        if (opcUaClient != null)
         {
-            bool newState = (bool)e.Item.Value.Value;
-
-            Debug.Log("OPC Update für Raum " + roomNumber + ": " + newState);
-
-            SetLampState(newState);
+            opcUaClient.OnLampStateChanged += HandleLampChange;
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogError("Fehler im Callback: " + ex.Message);
+            Debug.LogError($"Lamp in Room {roomNumber} hat keine Referenz zum OpcUaClientBehaviour!");
+        }
+    }
+
+    // WICHTIG: Event abbestellen, wenn das Objekt zerstört wird, um Memory Leaks zu vermeiden
+    void OnDestroy()
+    {
+        if (opcUaClient != null)
+        {
+            opcUaClient.OnLampStateChanged -= HandleLampChange;
+        }
+    }
+
+    private void HandleLampChange(int changedRoom, bool newState)
+    {
+        // Nur reagieren, wenn MEIN Raum gemeint ist
+        if (changedRoom == this.roomNumber)
+        {
+            SetLampState(newState);
         }
     }
 
     public void SetLampState(bool state)
     {
-        Debug.Log("Lamp " + roomNumber + " set to: " + state);
-
+        Debug.Log($"Lamp {roomNumber} set to: {state}");
         if (lampVisual != null)
         {
             lampVisual.SetActive(state);
-        }
-    }
-
-    // GANZ WICHTIG: Verbindung sauber trennen, wenn das Spiel beendet wird!
-    void OnApplicationQuit()
-    {
-        if (this.opcUaClient.GetClient() != null)
-        {
-            this.opcUaClient.GetClient().Disconnect();
         }
     }
 }

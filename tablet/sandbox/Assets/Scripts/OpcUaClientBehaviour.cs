@@ -1,30 +1,26 @@
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-
 using Opc.UaFx;
 using Opc.UaFx.Client;
-using TMPro;
-using Unity.VisualScripting;
+using System.Collections.Concurrent; // WICHTIG für Thread-Sicherheit
 
 public class OpcUaClientBehaviour : MonoBehaviour
 {
     private OpcClient client;
     private OpcSubscription subscription;
 
-    // Boolwerte für die Lampen
-    private bool room1Lamp1;
-    private bool room1Lamp2;
-    private bool room2Lamp1;
-    private bool room3Lamp1;
+    // Event, das von den Lamp-Skripten abonniert wird (Gibt Raumnummer und Zustand weiter)
+    public event Action<int, bool> OnLampStateChanged;
 
+    // Queue, um OPC-Events sicher in den Unity Main-Thread zu leiten
+    private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
 
     void Start()
     {
         try
         {
+
             // Nur fürs builden auskommentieren! Sonst fatal error auf PC
             // string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
             // Directory.CreateDirectory(certFolder);
@@ -35,120 +31,88 @@ public class OpcUaClientBehaviour : MonoBehaviour
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
 
             this.client.Connect();
-
-            OpcSubscription subscription = GetSubscription();
-
-            // .Log("Subscription erstellt für alle Lampen, RTs, und SwitchCounts in allen Räumen!");
-
+            this.subscription = client.SubscribeNodes();
 
             string[] nodeIds = {
-
-            // Room 1
+                // Room 1
                 "ns=6;s=::room1:Lampe",
                 "ns=6;s=::room1:LampeRT",
                 "ns=6;s=::room1:LampeSwitchCnt",
-
                 // Room 2
                 "ns=6;s=::room2:Lampe",
                 "ns=6;s=::room2:LampeRT",
                 "ns=6;s=::room2:LampeSwitchCnt",
-
                 // Room 3
                 "ns=6;s=::room3:Lampe",
                 "ns=6;s=::room3:LampeRT",
                 "ns=6;s=::room3:LampeSwitchCnt",
             };
 
-            subscription = client.SubscribeNodes();
-
             for (int index = 0; index < nodeIds.Length; index++)
             {
-                // Create an OpcMonitoredItem for the NodeId.
                 var item = new OpcMonitoredItem(nodeIds[index], OpcAttribute.Value);
                 item.DataChangeReceived += HandleDataChanged;
-
-                // You can set your own values on the "Tag" property
-                // that allows you to identify the source later.
                 item.Tag = index;
-
-                // Set a custom sampling interval on the 
-                // monitored item.
                 item.SamplingInterval = 200;
-
-                // Add the item to the subscription.
                 this.subscription.AddMonitoredItem(item);
             }
 
-            // After adding the items (or configuring the subscription), apply the changes.
             this.subscription.ApplyChanges();
         }
         catch (Exception ex)
         {
-            if (ex is TypeInitializationException tiex)
-                ex = tiex.InnerException;
-
             Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
         }
     }
 
-    public OpcClient GetClient()
+    // Führt die gesammelten Aktionen sicher im Main Thread aus
+    void Update()
     {
-        return this.client;
+        while (mainThreadActions.TryDequeue(out var action))
+        {
+            action?.Invoke();
+        }
     }
 
-    public OpcSubscription GetSubscription()
-    {
-        return this.subscription;
-    }
+    public OpcClient GetClient() { return this.client; }
 
     public void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
         OpcMonitoredItem item = (OpcMonitoredItem)sender;
+        string nodeId = item.NodeId.ToString();
 
-        Debug.Log("Data Change from Index : " + 
-        item.Tag + " : " + item.NodeId.ToString() + " : " + e.Item.Value + ":" + e.Item.Value.DataType);
+        Debug.Log($"Data Change from Node: {nodeId} Value: {e.Item.Value}");
 
-        if (item.NodeId.ToString().Contains("room1:Lampe"))
+        // Prüfen, ob es sich um den reinen "Lampe" Knoten handelt (und nicht RT oder SwitchCnt)
+        if (nodeId.Contains(":Lampe") && !nodeId.Contains("RT") && !nodeId.Contains("SwitchCnt"))
         {
-            
-        }
+            bool newState = (bool)e.Item.Value.Value;
+            int roomNumber = 0;
 
+            // Raumnummer aus der NodeId extrahieren
+            if (nodeId.Contains("room1")) roomNumber = 1;
+            else if (nodeId.Contains("room2")) roomNumber = 2;
+            else if (nodeId.Contains("room3")) roomNumber = 3;
+
+            if (roomNumber != 0)
+            {
+                // In die Queue für den Main Thread legen!
+                mainThreadActions.Enqueue(() =>
+                {
+                    // Alle Abonnenten (Lampen) benachrichtigen
+                    OnLampStateChanged?.Invoke(roomNumber, newState);
+                });
+            }
+        }
     }
 
-    // --------------------------------------------------------------------------------
-
-    /*   public void OnPointerDown(PointerEventData eventData)
-
+    // Die Trennung gehört ins Client-Skript, nicht in die Lampe!
+    void OnApplicationQuit()
+    {
+        if (this.client != null)
         {
-
-            Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
-
-            try
-            {
-                if (this.client != null)
-                    this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", true);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }
+            this.client.Disconnect();
+            Debug.Log("OPC Client disconnected.");
         }
-
-
-        public void OnPointerUp(PointerEventData eventData)
-        {
-
-            Switch.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-            try
-            {
-                if (this.client != null)
-                    this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", false);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }
-        }
-    */
+    }
 }
