@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using Opc.UaFx;
 using Opc.UaFx.Client;
+using UnityEngine.Events;
 
 
 public class Lamp : MonoBehaviour
@@ -11,26 +12,6 @@ public class Lamp : MonoBehaviour
     public int roomNumber;
 
     public GameObject lampVisual;
-
-    void Start()
-    {
-        try
-        {
-            opcUaClient.GetClient().Connect();
-            OpcSubscription subscription = opcUaClient.GetSubscription();
-            subscription = opcUaClient.GetClient().SubscribeDataChange(
-                "ns=6;s=::room" + roomNumber + ":Lampe",
-                OnLampValueChanged
-            );
-            Debug.Log("Subscription erstellt für Raum " + roomNumber);
-
-
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
-        }
-    }
 
     private void OnLampValueChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
@@ -47,9 +28,6 @@ public class Lamp : MonoBehaviour
             Debug.LogError("Fehler im Callback: " + ex.Message);
         }
     }
-
-
-
 
     public void SetLampState(bool state)
     {

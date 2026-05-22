@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using Opc.UaFx;
 using Opc.UaFx.Client;
 using TMPro;
+using Unity.VisualScripting;
 
 public class OpcUaClientBehaviour : MonoBehaviour
 {
@@ -18,10 +19,6 @@ public class OpcUaClientBehaviour : MonoBehaviour
     private bool room1Lamp2;
     private bool room2Lamp1;
     private bool room3Lamp1;
-
-    // Public Variablen
-    public GameObject Switch;
-    public int roomNumber;
 
 
     void Start()
@@ -39,26 +36,51 @@ public class OpcUaClientBehaviour : MonoBehaviour
 
             this.client.Connect();
 
+            OpcSubscription subscription = GetSubscription();
+
+            // .Log("Subscription erstellt für alle Lampen, RTs, und SwitchCounts in allen Räumen!");
 
 
             string[] nodeIds = {
 
-            /*
-            "ns=6;s=::opctest:mySinValue",
-            "ns=6;s=::AsGlobalPV:gSchweibsChange",
-            "ns=6;s=::AsGlobalPV:gSchweibsWrite",
-            */
-
             // Room 1
-            "ns=6;s=::room1:SwitchValueT",
+                "ns=6;s=::room1:Lampe",
+                "ns=6;s=::room1:LampeRT",
+                "ns=6;s=::room1:LampeSwitchCnt",
 
-            // Room 2
-            "ns=6;s=::room2:SwitchValueT",
+                // Room 2
+                "ns=6;s=::room2:Lampe",
+                "ns=6;s=::room2:LampeRT",
+                "ns=6;s=::room2:LampeSwitchCnt",
 
-            // Room 3
-            "ns=6;s=::room3:SwitchValueT",
-
+                // Room 3
+                "ns=6;s=::room3:Lampe",
+                "ns=6;s=::room3:LampeRT",
+                "ns=6;s=::room3:LampeSwitchCnt",
             };
+
+            subscription = client.SubscribeNodes();
+
+            for (int index = 0; index < nodeIds.Length; index++)
+            {
+                // Create an OpcMonitoredItem for the NodeId.
+                var item = new OpcMonitoredItem(nodeIds[index], OpcAttribute.Value);
+                item.DataChangeReceived += HandleDataChanged;
+
+                // You can set your own values on the "Tag" property
+                // that allows you to identify the source later.
+                item.Tag = index;
+
+                // Set a custom sampling interval on the 
+                // monitored item.
+                item.SamplingInterval = 200;
+
+                // Add the item to the subscription.
+                this.subscription.AddMonitoredItem(item);
+            }
+
+            // After adding the items (or configuring the subscription), apply the changes.
+            this.subscription.ApplyChanges();
         }
         catch (Exception ex)
         {
@@ -79,42 +101,54 @@ public class OpcUaClientBehaviour : MonoBehaviour
         return this.subscription;
     }
 
-
-
-// --------------------------------------------------------------------------------
-
-/*   public void OnPointerDown(PointerEventData eventData)
-
+    public void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
+        OpcMonitoredItem item = (OpcMonitoredItem)sender;
 
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
+        Debug.Log("Data Change from Index : " + 
+        item.Tag + " : " + item.NodeId.ToString() + " : " + e.Item.Value + ":" + e.Item.Value.DataType);
 
-        try
+        if (item.NodeId.ToString().Contains("room1:Lampe"))
         {
-            if (this.client != null)
-                this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", true);
+            
         }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.Message);
-        }
+
     }
 
+    // --------------------------------------------------------------------------------
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
+    /*   public void OnPointerDown(PointerEventData eventData)
 
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
-        try
         {
-            if (this.client != null)
-                this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", false);
+
+            Switch.transform.localRotation = Quaternion.Euler(0, 0, 5);
+
+            try
+            {
+                if (this.client != null)
+                    this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
         }
-        catch (Exception ex)
+
+
+        public void OnPointerUp(PointerEventData eventData)
         {
-            Debug.LogError(ex.Message);
+
+            Switch.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            try
+            {
+                if (this.client != null)
+                    this.client.WriteNode("ns=6;s=::room" + roomNumber + ":SwitchValueT", false);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
         }
-    }
-*/
+    */
 }
