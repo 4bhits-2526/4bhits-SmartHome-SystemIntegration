@@ -15,6 +15,8 @@ public class OpcUaClientBehaviour : MonoBehaviour
     // Event, das von den Lamp-Skripten abonniert wird (Gibt Raumnummer und Zustand weiter)
     public event Action<int, bool> OnLampStateChanged;
     public event Action<int, int> OnLampSwitchCountChanged;
+
+    public event Action<OpcClientState> OnConnectionStatusChanged;
     // Queue, um OPC-Events sicher in den Unity Main-Thread zu leiten
     private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
 
@@ -156,9 +158,7 @@ public class OpcUaClientBehaviour : MonoBehaviour
         {
             // The tag property contains the previously set value.
             OpcClient item = (OpcClient)sender;
- 
            
- 
             Console.WriteLine(
                         " Client_StateChange from Index {0}: {1}",
 
@@ -167,6 +167,24 @@ public class OpcUaClientBehaviour : MonoBehaviour
                         e.NewState.ToString(),
                         e.OldState.ToString(),
                         e.ToString());
+
+            if(e.NewState == OpcClientState.Connecting)
+            {
+                
+                Console.WriteLine("OPC UA Client is connecting...");
+            }
+            if (e.NewState == OpcClientState.Connected)
+            {
+                Debug.Log("OPC UA Client connected.");
+            }
+            else if (e.NewState == OpcClientState.Disconnected)
+            {
+                Debug.LogWarning("OPC UA Client disconnected.");
+            }
+            else if (e.NewState == OpcClientState.Reconnecting)
+            {
+                Debug.Log("OPC UA Client reconnecting...");
+            }
         }
 
 #endregion
