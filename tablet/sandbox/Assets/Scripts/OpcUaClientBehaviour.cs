@@ -12,10 +12,14 @@ public class OpcUaClientBehaviour : MonoBehaviour
 
     // Event, das von den Lamp-Skripten abonniert wird (Gibt Raumnummer und Zustand weiter)
     public event Action<int, bool> OnLampStateChanged;
-
+    public event Action<int, int> OnLampSwitchCountChanged;
     // Queue, um OPC-Events sicher in den Unity Main-Thread zu leiten
     private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
-
+    
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
     void Start()
     {
         try
@@ -83,26 +87,32 @@ public class OpcUaClientBehaviour : MonoBehaviour
 
         Debug.Log($"Data Change from Node: {nodeId} Value: {e.Item.Value}");
 
-        // Prüfen, ob es sich um den reinen "Lampe" Knoten handelt (und nicht RT oder SwitchCnt)
+        int roomNumber = 0;
+
+        if (nodeId.Contains("room1")) roomNumber = 1;
+        else if (nodeId.Contains("room2")) roomNumber = 2;
+        else if (nodeId.Contains("room3")) roomNumber = 3;
+
+        if (roomNumber == 0) return;
+
         if (nodeId.Contains(":Lampe") && !nodeId.Contains("RT") && !nodeId.Contains("SwitchCnt"))
         {
-            bool newState = (bool)e.Item.Value.Value;
-            int roomNumber = 0;
+            bool newState = Convert.ToBoolean(e.Item.Value.Value);
 
-            // Raumnummer aus der NodeId extrahieren
-            if (nodeId.Contains("room1")) roomNumber = 1;
-            else if (nodeId.Contains("room2")) roomNumber = 2;
-            else if (nodeId.Contains("room3")) roomNumber = 3;
-
-            if (roomNumber != 0)
+            mainThreadActions.Enqueue(() =>
             {
-                // In die Queue für den Main Thread legen!
-                mainThreadActions.Enqueue(() =>
-                {
-                    // Alle Abonnenten (Lampen) benachrichtigen
-                    OnLampStateChanged?.Invoke(roomNumber, newState);
-                });
-            }
+                OnLampStateChanged?.Invoke(roomNumber, newState);
+            });
+        }
+
+        if (nodeId.Contains("LampeSwitchCnt"))
+        {
+            int switchCnt = Convert.ToInt32(e.Item.Value.Value);
+
+            mainThreadActions.Enqueue(() =>
+            {
+                OnLampSwitchCountChanged?.Invoke(roomNumber, switchCnt);
+            });
         }
     }
 

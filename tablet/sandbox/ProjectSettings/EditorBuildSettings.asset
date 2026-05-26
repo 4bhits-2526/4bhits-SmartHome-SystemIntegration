@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Resources/Scenes/CameraTestScene.unity
     guid: 1d8e84f8c947d214fbb23e084dc842a7
+  - enabled: 1
+    path: Assets/Scenes/ExactTimeLamp.unity
+    guid: aefa4850d855c024d94e53d0b808f403
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 289c1b55c9541489481df5cc06664110, type: 3}
   m_UseUCBPForAssetBundles: 0
