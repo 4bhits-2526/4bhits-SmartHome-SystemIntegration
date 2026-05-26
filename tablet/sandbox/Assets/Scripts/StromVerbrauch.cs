@@ -4,37 +4,52 @@ using Opc.UaFx.Client;
 
 public class StromVerbrauch : MonoBehaviour
 {
+    [Header("OPC")]
     public OpcUaClientBehaviour opcBehaviour;
 
+    [Header("Live Laufzeit Texte")]
     public TMP_Text lampText1;
     public TMP_Text lampText2;
     public TMP_Text lampText3;
 
+    [Header("Kosten Texte")]
     public TMP_Text costText1;
     public TMP_Text costText2;
     public TMP_Text costText3;
 
+    [Header("Preis")]
     public float pricePerKWh = 0.30f;
 
-    // Lampen pro Raum
+    [Header("Lampen pro Raum")]
     public int room1Lamps = 2;
     public int room2Lamps = 1;
     public int room3Lamps = 1;
 
     private OpcClient client;
 
-    void Start()
-    {
-        if (opcBehaviour != null)
-        {
-            client = opcBehaviour.GetClient();
-        }
-    }
-
     void Update()
     {
-        if (client == null) return;
+        // Client erst holen wenn verfügbar
+        if (client == null)
+        {
+            if (opcBehaviour == null)
+            {
+                Debug.LogError("StromVerbrauch: OpcUaClientBehaviour fehlt!");
+                return;
+            }
 
+            client = opcBehaviour.GetClient();
+
+            if (client == null)
+            {
+                Debug.Log("StromVerbrauch: OPC Client noch nicht bereit...");
+                return;
+            }
+
+            Debug.Log("StromVerbrauch: OPC Client verbunden.");
+        }
+
+        // Räume aktualisieren
         UpdateRoom(
             "ns=6;s=::room1:LampeRT",
             lampText1,
@@ -54,37 +69,64 @@ public class StromVerbrauch : MonoBehaviour
             room3Lamps);
     }
 
-    void UpdateRoom(string nodeId, TMP_Text lampText, TMP_Text costText, int lampCount)
-{
-    try
+    void UpdateRoom(
+        string nodeId,
+        TMP_Text lampText,
+        TMP_Text costText,
+        int lampCount)
     {
-        var value = client.ReadNode(nodeId);
+        try
+        {
+            // TMP prüfen
+            if (lampText == null || costText == null)
+            {
+                Debug.LogError("TMP_Text Referenz fehlt für " + nodeId);
+                return;
+            }
 
-        float seconds =
-            System.Convert.ToSingle(value.Value);
+            // Node lesen
+            var value = client.ReadNode(nodeId);
 
-        Debug.Log("ROOM UPDATE " + nodeId + " = " + seconds);
+            if (value == null || value.Value == null)
+            {
+                Debug.LogWarning("Keine Daten von Node: " + nodeId);
+                return;
+            }
 
-        lampText.text = "LIVE: " + seconds.ToString("F2");
+            // Typ Debug
+            //Debug.Log(
+            //  "Node: " + nodeId +
+            //  " Value: " + value.Value +
+            //  " Type: " + value.Value.GetType());
 
-        Debug.Log("TMP gesetzt: " + lampText.text);
+            // Sekunden umwandeln
+            float seconds = System.Convert.ToSingle(value.Value);
 
-        float powerKW = 3f / 1000f;
-        float costPerSecond =
-            (powerKW / 3600f) *
-            pricePerKWh;
+            // Live Anzeige
+            lampText.text = "LIVE: " + seconds.ToString("F2") + " s";
 
-        float totalCost =
-            costPerSecond *
-            seconds *
-            lampCount;
+            // Verbrauchsberechnung
+            float powerKW = 3f / 1000f; // 3W Lampe
+            float costPerSecond =
+                (powerKW / 3600f) *
+                pricePerKWh;
 
-        costText.text =
-            totalCost.ToString("F6") + " €";
+            float totalCost =
+                costPerSecond *
+                seconds *
+                lampCount;
+
+            // Kostenanzeige
+            costText.text =
+                totalCost.ToString("F6") + " €";
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError(
+                "Fehler bei Node " +
+                nodeId +
+                "\n" +
+                ex.Message);
+        }
     }
-    catch (System.Exception ex)
-    {
-        Debug.LogError(ex);
-    }
-}
 }
