@@ -103,7 +103,7 @@ public class StromVerbrauch : MonoBehaviour
             float seconds = System.Convert.ToSingle(value.Value);
 
             // Live Anzeige
-            lampText.text = "LIVE: " + seconds.ToString("F2") + " s";
+            lampText.text = "LIVE: " + seconds.ToString("F0") + " s";
 
             // Verbrauchsberechnung
             float powerKW = 3f / 1000f; // 3W Lampe
