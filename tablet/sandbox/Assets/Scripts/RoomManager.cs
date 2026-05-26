@@ -61,4 +61,9 @@ public class RoomManager : MonoBehaviour
     {
         SceneManager.LoadScene("LampTimeCalc");
     }
+
+    public void LoadLogScene()
+    {
+        SceneManager.LoadScene("ExactTimeLamp");
+    }
 }
