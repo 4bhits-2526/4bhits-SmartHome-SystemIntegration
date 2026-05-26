@@ -7,6 +7,8 @@ using System.Collections.Concurrent; // WICHTIG für Thread-Sicherheit
 
 public class OpcUaClientBehaviour : MonoBehaviour
 {
+    private bool connection_status = false;
+    private bool isConnecting = true;
     private OpcClient client;
     private OpcSubscription subscription;
 
@@ -15,11 +17,17 @@ public class OpcUaClientBehaviour : MonoBehaviour
     public event Action<int, int> OnLampSwitchCountChanged;
     // Queue, um OPC-Events sicher in den Unity Main-Thread zu leiten
     private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
+
+
+#region OpcUaClient Setup
+
+
     
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
     }
+
     void Start()
     {
         try
@@ -30,11 +38,18 @@ public class OpcUaClientBehaviour : MonoBehaviour
             // Directory.CreateDirectory(certFolder);
             // Environment.CurrentDirectory = certFolder;
 
+            this.isConnecting = true;
+
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
+            this.client.StateChanged += Client_StateChanged;
             Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
 
             this.client.Connect();
+
+            this.connection_status = true;
+            this.isConnecting = false;
+
             this.subscription = client.SubscribeNodes();
 
             string[] nodeIds = {
@@ -66,6 +81,10 @@ public class OpcUaClientBehaviour : MonoBehaviour
         catch (Exception ex)
         {
             Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
+            // Variablen auf false setzten um den Connection Status richtig anzuzeigen
+            this.connection_status = false;
+            this.isConnecting = false;
+            Debug.Log(connection_status);
         }
     }
 
@@ -80,6 +99,8 @@ public class OpcUaClientBehaviour : MonoBehaviour
 
     public OpcClient GetClient() { return this.client; }
 
+#endregion
+#region Event Handler
     public void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
         OpcMonitoredItem item = (OpcMonitoredItem)sender;
@@ -114,6 +135,9 @@ public class OpcUaClientBehaviour : MonoBehaviour
                 OnLampSwitchCountChanged?.Invoke(roomNumber, switchCnt);
             });
         }
+
+
+        // Function for Connection Status
     }
 
     // Die Trennung gehört ins Client-Skript, nicht in die Lampe!
@@ -125,4 +149,25 @@ public class OpcUaClientBehaviour : MonoBehaviour
             Debug.Log("OPC Client disconnected.");
         }
     }
+
+#endregion
+#region Static Function
+    private static void Client_StateChanged(object sender, OpcClientStateChangedEventArgs e)
+        {
+            // The tag property contains the previously set value.
+            OpcClient item = (OpcClient)sender;
+ 
+           
+ 
+            Console.WriteLine(
+                        " Client_StateChange from Index {0}: {1}",
+
+ 
+                        item.ToString(),
+                        e.NewState.ToString(),
+                        e.OldState.ToString(),
+                        e.ToString());
+        }
+
+#endregion
 }
