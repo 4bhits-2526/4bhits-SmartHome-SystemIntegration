@@ -1,25 +1,29 @@
-using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LogUI : MonoBehaviour
 {
-    public TextMeshProUGUI logText;
+    [Header("UI")]
     public ScrollRect scrollRect;
+    public Transform content;
+    public GameObject textPrefab;
 
     public void AddLog(string message)
     {
-        logText.text += message + "\n";
-        StartCoroutine(ScrollDownNextFrame());
-    }
+        // Neuen Eintrag erzeugen
+        GameObject newEntry = Instantiate(textPrefab, content);
 
-    private IEnumerator ScrollDownNextFrame()
-    {
-        yield return null;
-        yield return null;
+        TMP_Text text = newEntry.GetComponent<TMP_Text>();
+        if (text != null)
+        {
+            text.text = message;
+        }
 
+        // Layout aktualisieren
         Canvas.ForceUpdateCanvases();
+
+        // Nach unten scrollen
         scrollRect.verticalNormalizedPosition = 0f;
     }
 }

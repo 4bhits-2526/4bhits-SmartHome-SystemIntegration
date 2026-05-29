@@ -1,31 +1,26 @@
 using System.Linq;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using System.Collections;
 
 public class LampLogManager : MonoBehaviour
 {
-    [SerializeField]
-    private OpcUaClientBehaviour opcClient;
-
-    public TMP_Text logText;
+    [SerializeField] private OpcUaClientBehaviour opcClient;
+    [SerializeField] private TMP_Text logText;
+    [SerializeField] private ScrollRect scrollRect;
 
     void Start()
     {
         if (opcClient == null)
-        {
-            // Suche zuerst nach aktiven Objekten
             opcClient = FindObjectOfType<OpcUaClientBehaviour>(true);
-        }
 
         if (opcClient == null)
-        {
-            // Fallback: Suche auch inaktive Objekte
             opcClient = Resources.FindObjectsOfTypeAll<OpcUaClientBehaviour>().FirstOrDefault();
-        }
 
         if (opcClient == null)
         {
-            Debug.LogError("OpcUaClientBehaviour nicht gefunden! Bitte das GameObject mit dem Skript in der Szene hinzufügen oder den Referenzwert im Inspector setzen.");
+            Debug.LogError("OpcUaClientBehaviour nicht gefunden!");
             return;
         }
 
@@ -36,11 +31,12 @@ public class LampLogManager : MonoBehaviour
     private void LogLampState(int roomNumber, bool isOn)
     {
         string state = isOn ? "AN" : "AUS";
-
         string message =
             $"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: Lampe {state}\n";
 
         logText.text += message;
+
+        StartCoroutine(ScrollToBottom());
     }
 
     private void LogLampSwitchCount(int roomNumber, int switchCount)
@@ -49,6 +45,16 @@ public class LampLogManager : MonoBehaviour
             $"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: SwitchCnt = {switchCount}\n";
 
         logText.text += message;
+
+        StartCoroutine(ScrollToBottom());
+    }
+
+    IEnumerator ScrollToBottom()
+    {
+        yield return null;
+
+        Canvas.ForceUpdateCanvases();
+        scrollRect.verticalNormalizedPosition = 0f;
     }
 
     void OnDestroy()
