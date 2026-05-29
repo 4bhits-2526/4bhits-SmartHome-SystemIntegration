@@ -22,20 +22,23 @@ Dadurch entsteht ein konsistentes Systemverhalten unabhängig vom Einstiegspunkt
 
 ## Komponenten
 
-### 1. Digitale Clients (über OPC UA)
+### 1. Digitale Clients
 
-**ZU SEHEN IN ABBILDUNG 1.1**
+**Übersichtsbild:**
 
-Folgende Geräte senden ihre Signale an die zentrale Logik:
+![Systemübersicht: Eingangslogik](Input_Diagramm_Ki.png)
 
-- **Tablet (Android)** → Kommunikation über HTTP/WebRequests oder OPC UA Gateway  
-- **Laptop (Windows)** → OPC UA Client  
-- **VR-System (Android)** → Kommunikation über HTTP/WebRequests oder Middleware  
+*Datei: industrial/sandbox/Input_Diagramm_Ki.png*
 
-> Hinweis: Ein nativer OPC UA Server auf Android-Geräten ist in der Regel nicht praktikabel.  
-> Daher erfolgt die Anbindung über alternative Schnittstellen oder Gateways.
+Folgende Geräte senden ihre Signale an die zentrale Logik (Kommunikationsweg in Klammern):
 
-Alle Clients kommunizieren logisch unabhängig, greifen jedoch auf dieselbe zentrale Logik zu.
+- **Tablet (Android)** — HTTP / Web-Requests oder über ein OPC-UA-Gateway
+- **Laptop (Windows)** — OPC UA Client
+- **VR-Brille / VR-System (Android)** — HTTP / Web-Requests oder Middleware/Gateway
+
+Hinweis: Ein nativer OPC UA Server auf Android-Geräten ist meist nicht praktikabel. Die Anbindung mobiler Geräte erfolgt daher über HTTP/Web-Requests, Middleware oder über Gateways.
+
+Alle Clients greifen auf dieselbe zentrale Logik zu; die Kommunikation erfolgt plattformübergreifend.
 
 ---
 
@@ -50,6 +53,16 @@ Alle Clients kommunizieren logisch unabhängig, greifen jedoch auf dieselbe zent
   - OPC UA Clients
   - Optionalen Gateways
 
+**Optionale Gateways:**
+
+Optionale Gateways sind Vermittler/Protokollübersetzer zwischen mobilen Geräten und der Industrie-Steuerung. Beispiele:
+
+- Ein OPC-UA-Gateway, das HTTP-Requests von Android-Clients in OPC UA-Variablen überführt
+- Ein MQTT-Broker oder eine Middleware, die Signale normalisiert und weiterleitet
+- Hardware-Protokollwandler für proprietäre Schnittstellen
+
+In unserem Projekt dienen Gateways vor allem dazu, mobile Plattformen (Tablet, VR) und die zentrale Steuerung zuverlässig zu koppeln.
+
 ---
 
 ## Logik
@@ -60,41 +73,36 @@ Alle Eingänge werden in einer zentralen **ODER-Verknüpfung (OR)** zusammengef�
 - Wenn **kein Eingang aktiv ist**, bleibt der Ausgang deaktiviert  
 
 ### Zustandsübersicht
-Eingang A ... Windows
-Eingang B ... VR
-Eingang C ... Tablet
-Eingang D ... analoge Eingänge
 
-| Eingang A | Eingang B | Eingang C | Eingang D | Ausgang |
-|----------|----------|----------|----------|---------|
-| 0        | 0        | 0        | 0        | 0       |
-| 1        | 0        | 0        | 0        | 1       |
-| 0        | 1        | 0        | 0        | 1       |
-| 0        | 0        | 1        | 0        | 1       |
-| 0        | 0        | 0        | 1        | 1       |
-| 1        | 1        | 0        | 0        | 1       |
-| 1        | 0        | 1        | 0        | 1       |
-| 1        | 0        | 0        | 1        | 1       |
-| 0        | 1        | 1        | 0        | 1       |
-| 0        | 1        | 0        | 1        | 1       |
-| 0        | 0        | 1        | 1        | 1       |
-| 1        | 1        | 1        | 0        | 1       |
-| 1        | 1        | 0        | 1        | 1       |
-| 1        | 0        | 1        | 1        | 1       |
-| 0        | 1        | 1        | 1        | 1       |
-| 1        | 1        | 1        | 1        | 1       |
+Direkte Eingänge / Plattformen
+
+| Windows (Laptop) | VR (Brille) | Tablet | Analoge Eingänge | Ausgang |
+|------------------|-------------|--------|------------------|---------|
+| 0                | 0           | 0      | 0                | 0       |
+| 1                | 0           | 0      | 0                | 1       |
+| 0                | 1           | 0      | 0                | 1       |
+| 0                | 0           | 1      | 0                | 1       |
+| 0                | 0           | 0      | 1                | 1       |
+| 1                | 1           | 0      | 0                | 1       |
+| 1                | 0           | 1      | 0                | 1       |
+| 1                | 0           | 0      | 1                | 1       |
+| 0                | 1           | 1      | 0                | 1       |
+| 0                | 1           | 0      | 1                | 1       |
+| 0                | 0           | 1      | 1                | 1       |
+| 1                | 1           | 1      | 0                | 1       |
+| 1                | 1           | 0      | 1                | 1       |
+| 1                | 0           | 1      | 1                | 1       |
+| 0                | 1           | 1      | 1                | 1       |
+| 1                | 1           | 1      | 1                | 1       |
 
 ---
+
 
 ## Ausgang
 
 Das Ergebnis der ODER-Verknüpfung steuert:
 
 - Smart-Home-Aktoren (z. B. Lampen)
-
-**Wichtig:**  
-Das Ausgangssignal ist **nicht invertiert**.  
-Eine Invertierung (`!Input`) erfolgt nur, wenn dies explizit gewünscht oder erforderlich ist.
 
 ---
 
@@ -106,3 +114,4 @@ Eine Invertierung (`!Input`) erfolgt nur, wenn dies explizit gewünscht oder erf
 - Alternative Schnittstellen für mobile Geräte
 - Direkte Hardwareanbindung für physische Eingänge
 - Synchronisation aller Systeme für konsistentes Verhalten
+
