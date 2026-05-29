@@ -342,3 +342,18 @@ R22 – Spatial Relationship
 Each issue must reference:
 - at least one feature (F#)
 - at least one requirement (R#)
+
+---
+
+## Issue: Kaffee bringen
+
+**Title:** Kaffee bringen  
+
+**Description:**  
+Lukas Winkler und Luca Moldovan einen Irish Coffee ohne Zucker bringen.
+
+**Kosten:**  
+0,80 € für den Kaffee.
+
+**Abrechnung:**  
+Bitte bei Simon Weitgasser einsammeln.
