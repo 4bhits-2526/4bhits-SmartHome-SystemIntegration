@@ -170,6 +170,10 @@ public class OpcUaClientBehaviour : MonoBehaviour
         {
             Debug.Log("OPC UA Client is connecting...");
         }
+        if (e.NewState == OpcClientState.Reconnected)
+        {
+            Debug.Log("OPC UA Client is reconnected!");
+        }
         if (e.NewState == OpcClientState.Connected)
         {
             Debug.Log("OPC UA Client connected.");

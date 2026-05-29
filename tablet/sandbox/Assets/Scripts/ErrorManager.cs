@@ -42,6 +42,9 @@ public class ErrorManager : MonoBehaviour
             case OpcClientState.Connected:
                 SetStatus(connectedColor, "Connected");
                 break;
+            case OpcClientState.Reconnected:
+                SetStatus(connectedColor, "Connected");
+                break;
             case OpcClientState.Connecting:
                 SetStatus(connectingColor, "Connecting...");
                 break;
