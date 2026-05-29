@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+      "visualstudiotoolsforunity.vstuc",
+      "james-yu.latex-workshop"
+    ],
+    "unwantedRecommendations": [
+      "mathematic.vscode-latex"
+    ]
+}
