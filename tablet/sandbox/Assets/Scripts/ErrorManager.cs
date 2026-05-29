@@ -1,44 +1,63 @@
-using UnityEditor.MemoryProfiler;
 using UnityEngine;
+using UnityEngine.UI;
 using Opc.UaFx.Client;
 using System;
+using TMPro;
 
 public class ErrorManager : MonoBehaviour
 {
-    private bool connection_status;
+    public OpcUaClientBehaviour opcClient;
 
-    private OpcClient client;
-    private OpcSubscription subscription;
+    [Header("Connection Status UI")]
+    [SerializeField] private Image statusImage;
+    [SerializeField] private TMP_Text statusText;
 
-    public 
+    [Header("Status Colors")]
+    [SerializeField] private Color connectedColor = Color.green;
+    [SerializeField] private Color connectingColor = Color.yellow;
+    [SerializeField] private Color disconnectedColor = Color.red;
+
+// Funktion zum Aktualisieren der Verbindungsstatus-Farbe
 
     void Start()
     {
-        try
+        // Wir abonnieren das Event des Central Clients
+        if (opcClient != null)
         {
-            this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
-            // Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
-            this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
-
-            this.client.Connect();
-            Debug.Log("Connected to OPC UA server!");
-            connection_status = true;
-
-
+            opcClient.OnConnectionStatusChanged += HandleLampChange;
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
-            connection_status = false;
+            Debug.LogError($"ErrorManager hat keine Referenz zum OpcUaClientBehaviour!");
         }
     }
 
-    void Update()
+    private void HandleLampChange(OpcClientState state)
     {
-        if (!connection_status)
+        // Aktualisiere die Statusfarbe basierend auf dem Verbindungsstatus
+        switch (state)
         {
-            Debug.LogError("Not connected to OPC UA server!");
+            case OpcClientState.Connected:
+                SetStatus(connectedColor, "Connected");
+                break;
+            case OpcClientState.Connecting:
+                SetStatus(connectingColor, "Connecting...");
+                break;
+            case OpcClientState.Reconnecting:
+                SetStatus(connectingColor, "Reconnecting...");
+                break;
+            case OpcClientState.Disconnected:
+                SetStatus(disconnectedColor, "Disconnected");
+                break;
         }
+    }
 
+    private void SetStatus(Color color, string text)
+    {
+        if (statusImage != null && statusText != null)
+        {
+            statusImage.color = color;
+            statusText.text = text;
+        }
     }
 }
