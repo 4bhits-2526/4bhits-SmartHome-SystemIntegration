@@ -1170,11 +1170,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: SmartHome
       objectReference: {fileID: 0}
+    - target: {fileID: 2920114462652172702, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: opcUaClient
+      value: 
+      objectReference: {fileID: 1058842962}
     - target: {fileID: 3649699841769295230, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1354120958}
     - target: {fileID: 5435257980774327543, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: opcUaClient
+      value: 
+      objectReference: {fileID: 1058842962}
+    - target: {fileID: 6560827801396836438, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: opcUaClient
+      value: 
+      objectReference: {fileID: 1058842962}
+    - target: {fileID: 6854390655400541441, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
       objectReference: {fileID: 1058842962}
@@ -1198,83 +1210,11 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1354120958}
-    m_RemovedComponents:
-    - {fileID: 5048480034552452273, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-    - {fileID: 4698792232301315442, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-    - {fileID: 2565701476384816742, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4882486104359185723, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1090545219}
-    - targetCorrespondingSourceObject: {fileID: 8550337438682475675, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1090545218}
-    - targetCorrespondingSourceObject: {fileID: 6595425772696996419, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1090545217}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
---- !u!1 &1090545214 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6595425772696996419, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-  m_PrefabInstance: {fileID: 1090545213}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1090545215 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8550337438682475675, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-  m_PrefabInstance: {fileID: 1090545213}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1090545216 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4882486104359185723, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-  m_PrefabInstance: {fileID: 1090545213}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1090545217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090545214}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab633f6b2896624091cc0b7b56ce299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Switch: {fileID: 1090545214}
-  roomNumber: 3
-  opcUaClient: {fileID: 1058842962}
---- !u!114 &1090545218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090545215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab633f6b2896624091cc0b7b56ce299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Switch: {fileID: 1090545215}
-  roomNumber: 2
-  opcUaClient: {fileID: 1058842962}
---- !u!114 &1090545219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1090545216}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ab633f6b2896624091cc0b7b56ce299, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Switch: {fileID: 1090545216}
-  roomNumber: 1
-  opcUaClient: {fileID: 1058842962}
 --- !u!1 &1306636826
 GameObject:
   m_ObjectHideFlags: 0

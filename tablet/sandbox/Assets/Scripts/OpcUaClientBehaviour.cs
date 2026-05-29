@@ -3,7 +3,8 @@ using System.IO;
 using UnityEngine;
 using Opc.UaFx;
 using Opc.UaFx.Client;
-using System.Collections.Concurrent; // WICHTIG für Thread-Sicherheit
+using System.Collections.Concurrent;
+using Unity.VisualScripting; // WICHTIG für Thread-Sicherheit
 
 public class OpcUaClientBehaviour : MonoBehaviour
 {
@@ -21,10 +22,8 @@ public class OpcUaClientBehaviour : MonoBehaviour
     private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
 
 
-#region OpcUaClient Setup
+    #region OpcUaClient Setup
 
-
-    
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -101,8 +100,8 @@ public class OpcUaClientBehaviour : MonoBehaviour
 
     public OpcClient GetClient() { return this.client; }
 
-#endregion
-#region Event Handler
+    #endregion
+    #region Event Handler
     public void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
         OpcMonitoredItem item = (OpcMonitoredItem)sender;
@@ -152,40 +151,41 @@ public class OpcUaClientBehaviour : MonoBehaviour
         }
     }
 
-#endregion
-#region Static Function
-    private static void Client_StateChanged(object sender, OpcClientStateChangedEventArgs e)
+    #endregion
+    private void Client_StateChanged(object sender, OpcClientStateChangedEventArgs e)
+    {
+        // The tag property contains the previously set value.
+        OpcClient item = (OpcClient)sender;
+
+        Debug.Log((
+                    " Client_StateChange from Index {0}: {1}",
+
+
+                    item.ToString(),
+                    e.NewState.ToString(),
+                    e.OldState.ToString(),
+                    e.ToString()));
+
+        if (e.NewState == OpcClientState.Connecting)
         {
-            // The tag property contains the previously set value.
-            OpcClient item = (OpcClient)sender;
-           
-            Console.WriteLine(
-                        " Client_StateChange from Index {0}: {1}",
-
- 
-                        item.ToString(),
-                        e.NewState.ToString(),
-                        e.OldState.ToString(),
-                        e.ToString());
-
-            if(e.NewState == OpcClientState.Connecting)
-            {
-                
-                Console.WriteLine("OPC UA Client is connecting...");
-            }
-            if (e.NewState == OpcClientState.Connected)
-            {
-                Debug.Log("OPC UA Client connected.");
-            }
-            else if (e.NewState == OpcClientState.Disconnected)
-            {
-                Debug.LogWarning("OPC UA Client disconnected.");
-            }
-            else if (e.NewState == OpcClientState.Reconnecting)
-            {
-                Debug.Log("OPC UA Client reconnecting...");
-            }
+            Debug.Log("OPC UA Client is connecting...");
+        }
+        if (e.NewState == OpcClientState.Connected)
+        {
+            Debug.Log("OPC UA Client connected.");
+        }
+        else if (e.NewState == OpcClientState.Disconnected)
+        {
+            Debug.LogWarning("OPC UA Client disconnected.");
+        }
+        else if (e.NewState == OpcClientState.Reconnecting)
+        {
+            Debug.Log("OPC UA Client reconnecting...");
         }
 
-#endregion
+        mainThreadActions.Enqueue(() =>
+        {
+            OnConnectionStatusChanged?.Invoke(e.NewState);
+        }); 
+    }
 }

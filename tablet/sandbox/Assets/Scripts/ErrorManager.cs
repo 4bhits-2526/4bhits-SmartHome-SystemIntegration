@@ -24,7 +24,8 @@ public class ErrorManager : MonoBehaviour
         // Wir abonnieren das Event des Central Clients
         if (opcClient != null)
         {
-            opcClient.OnConnectionStatusChanged += HandleLampChange;
+            opcClient.OnConnectionStatusChanged += HandleConnection;
+            Debug.Log("Handle Conncection wurde registriert");
         }
         else
         {
@@ -32,8 +33,9 @@ public class ErrorManager : MonoBehaviour
         }
     }
 
-    private void HandleLampChange(OpcClientState state)
+    private void HandleConnection(OpcClientState state)
     {
+        Debug.Log("ConnectionStatus Handler called");
         // Aktualisiere die Statusfarbe basierend auf dem Verbindungsstatus
         switch (state)
         {
