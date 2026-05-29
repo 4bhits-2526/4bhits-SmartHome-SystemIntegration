@@ -93,17 +93,14 @@ public class StromVerbrauch : MonoBehaviour
                 return;
             }
 
-            // Typ Debug
-            //Debug.Log(
-            //  "Node: " + nodeId +
-            //  " Value: " + value.Value +
-            //  " Type: " + value.Value.GetType());
-
             // Sekunden umwandeln
             float seconds = System.Convert.ToSingle(value.Value);
 
-            // Live Anzeige
-            lampText.text = "LIVE: " + seconds.ToString("F0") + " s";
+            // ===== VARIANTE 1: Sekunden + Millisekunden =====
+            int sec = (int)seconds;
+            int ms = (int)((seconds - sec) * 1000f);
+
+            lampText.text = $"LIVE: {sec}.{ms:D3} s";
 
             // Verbrauchsberechnung
             float powerKW = 3f / 1000f; // 3W Lampe
@@ -118,7 +115,7 @@ public class StromVerbrauch : MonoBehaviour
 
             // Kostenanzeige
             costText.text =
-                totalCost.ToString("F6") + " €";
+                totalCost.ToString("F8") + " €";
         }
         catch (System.Exception ex)
         {
