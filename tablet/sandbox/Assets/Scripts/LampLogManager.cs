@@ -1,14 +1,17 @@
+using System.Collections;
 using System.Linq;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
-using System.Collections;
+using TMPro;
 
 public class LampLogManager : MonoBehaviour
 {
     [SerializeField] private OpcUaClientBehaviour opcClient;
+
+    [Header("UI")]
     [SerializeField] private TMP_Text logText;
     [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private RectTransform content;
 
     void Start()
     {
@@ -31,30 +34,38 @@ public class LampLogManager : MonoBehaviour
     private void LogLampState(int roomNumber, bool isOn)
     {
         string state = isOn ? "AN" : "AUS";
-        string message =
-            $"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: Lampe {state}\n";
-
-        logText.text += message;
-
-        StartCoroutine(ScrollToBottom());
+        AddLog($"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: Lampe {state}\n");
     }
 
     private void LogLampSwitchCount(int roomNumber, int switchCount)
     {
-        string message =
-            $"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: SwitchCnt = {switchCount}\n";
-
-        logText.text += message;
-
-        StartCoroutine(ScrollToBottom());
+        AddLog($"[{System.DateTime.Now:HH:mm:ss}] Raum {roomNumber}: SwitchCnt = {switchCount}\n");
     }
 
-    IEnumerator ScrollToBottom()
+    private void AddLog(string message)
+    {
+        logText.text += message;
+        StartCoroutine(ScrollToRealBottom());
+    }
+
+    private IEnumerator ScrollToRealBottom()
     {
         yield return null;
 
+        logText.ForceMeshUpdate(true);
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(logText.rectTransform);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+
         Canvas.ForceUpdateCanvases();
+
+        yield return null;
+
+        scrollRect.StopMovement();
         scrollRect.verticalNormalizedPosition = 0f;
+        scrollRect.velocity = Vector2.zero;
+
+        Canvas.ForceUpdateCanvases();
     }
 
     void OnDestroy()
