@@ -114,8 +114,8 @@ public class StromVerbrauch : MonoBehaviour
                 lampCount;
 
             // Kostenanzeige
-            costText.text =
-                totalCost.ToString("F8") + " €";
+            costText.text = 
+            "Kosten: " + totalCost.ToString("F8") + " €";
         }
         catch (System.Exception ex)
         {
