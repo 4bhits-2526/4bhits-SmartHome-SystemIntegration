@@ -6,63 +6,49 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 public class VRButton : MonoBehaviour
 {
     public TcpClientUnity tcpClient;
-    public int lampIndex; // 1, 2, or 3
+    public int lampIndex;
 
     public GameObject SwitchOn;
     public GameObject SwitchOff;
 
-    private bool isOn = false;
-
-    XRSimpleInteractable m_Interactable;
+    private XRSimpleInteractable m_Interactable;
 
     void Awake()
     {
         m_Interactable = GetComponent<XRSimpleInteractable>();
-
-        if (m_Interactable == null)
-        {
-            Debug.LogError($"{nameof(VRButton)} requires an {nameof(XRSimpleInteractable)} on the same GameObject.", this);
-        }
     }
 
     void OnEnable()
     {
-        if (m_Interactable == null)
-            return;
-
-        m_Interactable.selectEntered.AddListener(OnSelectEntered);
+        m_Interactable.selectEntered.AddListener(OnPressed);
+        m_Interactable.selectExited.AddListener(OnReleased);
     }
 
     void OnDisable()
     {
-        if (m_Interactable == null)
-            return;
-
-        m_Interactable.selectEntered.RemoveListener(OnSelectEntered);
+        m_Interactable.selectEntered.RemoveListener(OnPressed);
+        m_Interactable.selectExited.RemoveListener(OnReleased);
     }
 
-    void OnSelectEntered(SelectEnterEventArgs args)
-    {
-        OnPress();
-    }
-
-    public void OnPress()
-    {
-        // 🔥 Toggle local visual state
-        isOn = !isOn;
-        FlipSwitchVisual();
-
-        // 🔥 Send toggle to TCP system
-        if (tcpClient != null)
-            tcpClient.ToggleLamp(lampIndex);
-    }
-
-    void FlipSwitchVisual()
+    void OnPressed(SelectEnterEventArgs args)
     {
         if (SwitchOn != null)
-            SwitchOn.SetActive(isOn);
+            SwitchOn.SetActive(true);
 
         if (SwitchOff != null)
-            SwitchOff.SetActive(!isOn);
+            SwitchOff.SetActive(false);
+
+        tcpClient?.SendSwitchValue(lampIndex, true);
+    }
+
+    void OnReleased(SelectExitEventArgs args)
+    {
+        if (SwitchOn != null)
+            SwitchOn.SetActive(false);
+
+        if (SwitchOff != null)
+            SwitchOff.SetActive(true);
+
+        tcpClient?.SendSwitchValue(lampIndex, false);
     }
 }
