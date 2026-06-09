@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using System.Net.Sockets;
+using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using NetPing = System.Net.NetworkInformation.Ping;
+using IPStatus = System.Net.NetworkInformation.IPStatus;
 
 /// <summary>
 /// CheckView – erste Ansicht beim Start.
@@ -17,7 +20,6 @@ public class CheckViewController : MonoBehaviour
     [SerializeField] private string opcuaIP      = "192.168.1.61";
     [SerializeField] private int    opcuaPort     = 4840;
     [SerializeField] private string tabletIP      = "192.168.1.193";
-    [SerializeField] private int    tabletPort    = 80;
     [SerializeField] private float  checkInterval = 5f;
 
     [Header("PDF Tutorial")]
@@ -68,6 +70,7 @@ public class CheckViewController : MonoBehaviour
     {
         while (true)
         {
+            // 1) Steuerung (OPC UA) per TCP pruefen
             yield return StartCoroutine(CheckTcp(opcuaIP, opcuaPort, 2f,
                 result =>
                 {
@@ -83,10 +86,10 @@ public class CheckViewController : MonoBehaviour
                     RefreshWeiterButton();
                 }));
 
-            // Tablet erst pruefen wenn Steuerung (OPC UA) verbunden ist
+            // 2) Tablet per Ping pruefen – laeuft immer, solange Steuerung verbunden
             if (opcuaConnected)
             {
-                yield return StartCoroutine(CheckTcp(tabletIP, tabletPort, 2f,
+                yield return StartCoroutine(CheckPing(tabletIP, 1f,
                     result =>
                     {
                         tabletReachable = result;
@@ -99,6 +102,29 @@ public class CheckViewController : MonoBehaviour
 
             yield return new WaitForSeconds(checkInterval);
         }
+    }
+
+    private IEnumerator CheckPing(string ip, float timeout, Action<bool> callback)
+    {
+        bool reached = false;
+        bool done    = false;
+
+        var thread = new System.Threading.Thread(() =>
+        {
+            try
+            {
+                using var ping = new NetPing();
+                var reply = ping.Send(ip, (int)(timeout * 1000));
+                reached = reply.Status == IPStatus.Success;
+            }
+            catch { }
+            finally { done = true; }
+        });
+        thread.IsBackground = true;
+        thread.Start();
+
+        yield return new WaitUntil(() => done);
+        callback(reached);
     }
 
     private IEnumerator CheckTcp(string ip, int port, float timeout, Action<bool> callback)
@@ -139,7 +165,7 @@ public class CheckViewController : MonoBehaviour
     private void RefreshWeiterButton()
     {
         if (weiterBtn == null) return;
-        bool ok = opcuaConnected && tabletReachable;
+        bool ok = opcuaConnected;   // Tablet ist optional – Steuerung reicht
         weiterBtn.interactable = ok;
         if (weiterBtn.TryGetComponent<Image>(out var img))
             img.color = ok ? C_BtnGrn : C_BtnGray;
