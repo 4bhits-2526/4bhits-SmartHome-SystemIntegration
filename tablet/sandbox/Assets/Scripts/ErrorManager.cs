@@ -9,13 +9,12 @@ public class ErrorManager : MonoBehaviour
     public OpcUaClientBehaviour opcClient;
 
     [Header("Connection Status UI")]
-    [SerializeField] private Image statusImage;
     [SerializeField] private TMP_Text statusText;
-
-    [Header("Status Colors")]
-    [SerializeField] private Color connectedColor = Color.green;
-    [SerializeField] private Color connectingColor = Color.yellow;
-    [SerializeField] private Color disconnectedColor = Color.red;
+    [SerializeField] private Image connectionStatus;
+    [SerializeField] private Sprite connectionStatusConnected;
+    [SerializeField] private Sprite connectionStatusDisconnected;
+    [SerializeField] private Sprite connectionStatusIsConnecting;
+    
 
 // Funktion zum Aktualisieren der Verbindungsstatus-Farbe
 
@@ -40,28 +39,28 @@ public class ErrorManager : MonoBehaviour
         switch (state)
         {
             case OpcClientState.Connected:
-                SetStatus(connectedColor, "Connected");
+                SetStatus(connectionStatusConnected, "Connected");
                 break;
             case OpcClientState.Reconnected:
-                SetStatus(connectedColor, "Connected");
+                SetStatus(connectionStatusConnected, "Connected");
                 break;
             case OpcClientState.Connecting:
-                SetStatus(connectingColor, "Connecting...");
+                SetStatus(connectionStatusIsConnecting, "Connecting...");
                 break;
             case OpcClientState.Reconnecting:
-                SetStatus(connectingColor, "Reconnecting...");
+                SetStatus(connectionStatusIsConnecting, "Reconnecting...");
                 break;
             case OpcClientState.Disconnected:
-                SetStatus(disconnectedColor, "Disconnected");
+                SetStatus(connectionStatusDisconnected, "Disconnected");
                 break;
         }
     }
 
-    private void SetStatus(Color color, string text)
+    private void SetStatus(Sprite connection, string text)
     {
-        if (statusImage != null && statusText != null)
+        if (connection != null && statusText != null)
         {
-            statusImage.color = color;
+            connectionStatus.sprite = connection;
             statusText.text = text;
         }
     }
