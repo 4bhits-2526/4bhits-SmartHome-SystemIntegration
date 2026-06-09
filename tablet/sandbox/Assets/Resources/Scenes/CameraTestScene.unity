@@ -1176,6 +1176,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.332
+      objectReference: {fileID: 0}
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 767288901551752028, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.858
+      objectReference: {fileID: 0}
     - target: {fileID: 921988505813071811, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.35933495
@@ -1216,27 +1240,59 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1130283699968217400, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: opcUaClient
+      value: 
+      objectReference: {fileID: 1058842962}
     - target: {fileID: 1329040383991050697, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: m_Name
       value: SmartHome
       objectReference: {fileID: 0}
-    - target: {fileID: 2920114462652172702, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-      propertyPath: opcUaClient
-      value: 
-      objectReference: {fileID: 1058842962}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1868164062865485148, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3649699841769295230, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1354120958}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.353
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4046073527174875999, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.823
+      objectReference: {fileID: 0}
     - target: {fileID: 5435257980774327543, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
       objectReference: {fileID: 1058842962}
     - target: {fileID: 6560827801396836438, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
-      propertyPath: opcUaClient
-      value: 
-      objectReference: {fileID: 1058842962}
-    - target: {fileID: 6854390655400541441, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
       objectReference: {fileID: 1058842962}
@@ -1249,6 +1305,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1058842962}
     - target: {fileID: 8301324382578747014, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: opcUaClient
+      value: 
+      objectReference: {fileID: 1058842962}
+    - target: {fileID: 8458372350116379100, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
       objectReference: {fileID: 1058842962}
