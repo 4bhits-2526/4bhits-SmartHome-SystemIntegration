@@ -67,10 +67,18 @@ In unserem Projekt dienen Gateways vor allem dazu, mobile Plattformen (Tablet, V
 
 ## Logik
 
-Alle Eingänge werden in einer zentralen **ODER-Verknüpfung (OR)** zusammengeführt:
+Jeder Eingang wird zunächst als kurzer Impuls verarbeitet. Dazu wird ein sogenannter **Puls-Trigger (P_TRIG)** verwendet, der auf steigende Zustände reagiert und einen einmaligen Impuls erzeugt.
 
-- Wenn **mindestens ein Eingang aktiv ist**, wird der Ausgang aktiviert  
-- Wenn **kein Eingang aktiv ist**, bleibt der Ausgang deaktiviert  
+Diese Impulse werden anschließend in einer zentralen **ODER-Verknüpfung (OR)** zusammengeführt.
+
+- Wenn **mindestens ein Eingang einen Impuls erzeugt**, liefert die OR-Stufe einen aktiven Impuls  
+- Wenn **kein Eingang einen Impuls erzeugt**, bleibt die OR-Stufe inaktiv  
+
+Dieser kombinierte Impuls wird nicht direkt als Schaltbefehl genutzt. Stattdessen dient er als Takt für ein **T-Flipflop**.
+
+- Jeder aktive Eingang führt zu einem Impuls an der OR-Stufe  
+- Jeder OR-Impuls toggelt den Zustand des T-Flipflops  
+- Das Flipflop speichert den aktuellen Ausgangszustand bis zum nächsten Impuls  
 
 ### Zustandsübersicht
 
@@ -100,10 +108,18 @@ Direkte Eingänge / Plattformen
 
 ## Ausgang
 
-Das Ergebnis der ODER-Verknüpfung steuert:
+Der OR-Ausgang wird nicht direkt als Schaltbefehl an die Aktoren weitergegeben. Stattdessen wird er als Takt für ein **T-Flipflop** genutzt:
 
-- Smart-Home-Aktoren (z. B. Lampen)
+- Jeder Eingang erzeugt einen Impuls über einen P_TRIG  
+- Die Impulse werden im OR zusammengeführt  
+- Jeder OR-Impuls toggelt das T-Flipflop  
+- Das Flipflop hält den Ausgangszustand bis zum nächsten Impuls  
 
+Dadurch wechselt der Ausgangszustand bei jedem aktiven Eingangssignal. Diese Logik eignet sich besonders, wenn der Schaltvorgang nicht als reines "EIN/AUS direkt vom Eingang", sondern als **Umschalten bei jeder Eingabe** gedacht ist.
+
+Das T-Flipflop steuert anschließend die eigentlichen Smart-Home-Aktoren, z. B. Lampen.
+
+![Systemübersicht: Eingangslogik](new_Input_Diagramm.png)
 ---
 
 ## Zusammenfassung
