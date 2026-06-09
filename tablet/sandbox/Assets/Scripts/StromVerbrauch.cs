@@ -100,7 +100,7 @@ public class StromVerbrauch : MonoBehaviour
             int sec = (int)seconds;
             int ms = (int)((seconds - sec) * 1000f);
 
-            lampText.text = $"LIVE: {sec}.{ms:D3} s";
+            lampText.text = $"<b>Total Runtime of Lamp: {sec} seconds</b>";
 
             // Verbrauchsberechnung
             float powerKW = 3f / 1000f; // 3W Lampe
@@ -115,7 +115,7 @@ public class StromVerbrauch : MonoBehaviour
 
             // Kostenanzeige
             costText.text = 
-            "Kosten: " + totalCost.ToString("F8") + " €";
+            "<b>" + "Price: " + totalCost.ToString("F8") + "</b> € \nPrice is calculated with average kWh cost (30cent) and 3W power consumption per lamp.";
         }
         catch (System.Exception ex)
         {
