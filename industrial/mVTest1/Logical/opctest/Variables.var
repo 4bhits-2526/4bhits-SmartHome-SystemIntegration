@@ -1,0 +1,4 @@
+VAR
+	mySinValue : REAL := 0.0;
+	mySinValueIn : REAL := 0;
+END_VAR

@@ -1,142 +1,195 @@
 using System;
+using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-
 using Opc.UaFx;
 using Opc.UaFx.Client;
-using TMPro;
+using System.Collections.Concurrent;
+using Unity.VisualScripting; // WICHTIG für Thread-Sicherheit
 
-public class OpcUaClientBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class OpcUaClientBehaviour : MonoBehaviour
 {
+    private bool connection_status = false;
+    private bool isConnecting = true;
     private OpcClient client;
-    private TextMeshProUGUI statusText;
-    private TextMeshProUGUI statusText4;
-    private TextMeshProUGUI statusText3;
     private OpcSubscription subscription;
 
-    public GameObject Switch;
-    
-    public Color normalColor = Color.white;
-    public Color pressedColor = Color.gray;
-    public Light buttonLight;
+    // Event, das von den Lamp-Skripten abonniert wird (Gibt Raumnummer und Zustand weiter)
+    public event Action<int, bool> OnLampStateChanged;
+    public event Action<int, int> OnLampSwitchCountChanged;
 
+    public event Action<OpcClientState> OnConnectionStatusChanged;
+    // Queue, um OPC-Events sicher in den Unity Main-Thread zu leiten
+    private readonly ConcurrentQueue<Action> mainThreadActions = new ConcurrentQueue<Action>();
+
+
+    #region OpcUaClient Setup
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     void Start()
     {
-        this.statusText = GameObject.Find("statusText").GetComponent<TextMeshProUGUI>();
-        this.statusText4 = GameObject.Find("statusText4").GetComponent<TextMeshProUGUI>();
-        this.statusText3 = GameObject.Find("statusText3").GetComponent<TextMeshProUGUI>();
-
-        this.statusText.text = "Connecting...";
-        this.statusText4.text = "Connecting4...";
-        this.statusText3.text = "Info3...";
-        this.buttonLight.color = normalColor;
-
         try
         {
+
+            // Nur fürs builden auskommentieren! Sonst fatal error auf PC
+            string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
+            Directory.CreateDirectory(certFolder);
+            Environment.CurrentDirectory = certFolder;
+
+            this.isConnecting = true;
+
             this.client = new OpcClient("opc.tcp://192.168.1.61:4840/");
+            this.client.StateChanged += Client_StateChanged;
+            Opc.UaFx.OpcSecurityPolicy myOPCUASecurityPolicy = new Opc.UaFx.OpcSecurityPolicy(Opc.UaFx.OpcSecurityMode.None);
             this.client.Security.UserIdentity = new OpcClientIdentity("opcuser1", ".opcuser1");
 
             this.client.Connect();
-            this.statusText.text = "Connected!";
+
+            this.connection_status = true;
+            this.isConnecting = false;
+
+            this.subscription = client.SubscribeNodes();
 
             string[] nodeIds = {
-            "ns=6;s=::opctest:mySinValue",
-            "ns=6;s=::AsGlobalPV:gSchweibsChange",
-            "ns=6;s=::AsGlobalPV:gSchweibsWrite",
+                // Room 1
+                "ns=6;s=::room1:Lampe",
+                "ns=6;s=::room1:LampeRT",
+                "ns=6;s=::room1:LampeSwitchCnt",
+                // Room 2
+                "ns=6;s=::room2:Lampe",
+                "ns=6;s=::room2:LampeRT",
+                "ns=6;s=::room2:LampeSwitchCnt",
+                // Room 3
+                "ns=6;s=::room3:Lampe",
+                "ns=6;s=::room3:LampeRT",
+                "ns=6;s=::room3:LampeSwitchCnt",
+            };
 
-            // Room 1
-            "ns=6;s=::room1:Lampe",
-            "ns=6;s=::room1:SwitchValueT",
-            "ns=6;s=::room1:SwitchValue",
-            // Room 2
-            "ns=6;s=::room2:Lampe",
-            "ns=6;s=::room2:SwitchValueT",
-            "ns=6;s=::room2:SwitchValue",
-            // Room 3
-            "ns=6;s=::room3:Lampe",
-            "ns=6;s=::room3:SwitchValueT",
-            "ns=6;s=::room3:SwitchValue"
-        };
-
-            this.subscription = this.client.SubscribeNodes();
-
-            for (int i = 0; i < nodeIds.Length; i++)
+            for (int index = 0; index < nodeIds.Length; index++)
             {
-                var item = new OpcMonitoredItem(nodeIds[i], OpcAttribute.Value);
+                var item = new OpcMonitoredItem(nodeIds[index], OpcAttribute.Value);
                 item.DataChangeReceived += HandleDataChanged;
-                item.Tag = i;
+                item.Tag = index;
                 item.SamplingInterval = 200;
-
                 this.subscription.AddMonitoredItem(item);
             }
 
             this.subscription.ApplyChanges();
-            this.statusText3.text = "Subscribed!";
         }
         catch (Exception ex)
         {
-            if (ex is TypeInitializationException tiex)
-                ex = tiex.InnerException;
-
-            this.statusText.text += "\n" + ex.Message;
+            Debug.LogError("Error connecting to OPC UA server: " + ex.Message);
+            // Variablen auf false setzten um den Connection Status richtig anzuzeigen
+            this.connection_status = false;
+            this.isConnecting = false;
+            Debug.Log(connection_status);
         }
     }
 
-    
-    public void OnPointerDown(PointerEventData eventData)
+    // Führt die gesammelten Aktionen sicher im Main Thread aus
+    void Update()
     {
-        Debug.Log("Licht AN");
-        // Rotation des Lichtschalters in Unity anpassen
-    
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 5); // Beispielrotation, anpassen je nach Bedarf
-        buttonLight.color = pressedColor;
-
-        try
+        while (mainThreadActions.TryDequeue(out var action))
         {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", true);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.Message);
+            action?.Invoke();
         }
     }
 
-    
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        Debug.Log("Licht AUS");
+    public OpcClient GetClient() { return this.client; }
 
-        Switch.transform.localRotation = Quaternion.Euler(0, 0, 0); // Zurück zur ursprünglichen Rotation
-        buttonLight.color = normalColor;
-
-        try
-        {
-            this.client.WriteNode("ns=6;s=::room1:SwitchValueT", false);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError(ex.Message);
-        }
-    }
-
-    void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
+    #endregion
+    #region Event Handler
+    public void HandleDataChanged(object sender, OpcDataChangeReceivedEventArgs e)
     {
         OpcMonitoredItem item = (OpcMonitoredItem)sender;
+        string nodeId = item.NodeId.ToString();
 
-        if (item.NodeId.ToString().Contains("gSchweibsChange"))
+        Debug.Log($"Data Change from Node: {nodeId} Value: {e.Item.Value}");
+
+        int roomNumber = 0;
+
+        if (nodeId.Contains("room1")) roomNumber = 1;
+        else if (nodeId.Contains("room2")) roomNumber = 2;
+        else if (nodeId.Contains("room3")) roomNumber = 3;
+
+        if (roomNumber == 0) return;
+
+        if (nodeId.Contains(":Lampe") && !nodeId.Contains("RT") && !nodeId.Contains("SwitchCnt"))
         {
-            this.statusText.text = e.Item.Value.Value?.ToString() ?? "null";
+            bool newState = Convert.ToBoolean(e.Item.Value.Value);
+
+            mainThreadActions.Enqueue(() =>
+            {
+                OnLampStateChanged?.Invoke(roomNumber, newState);
+            });
         }
-        else if (item.NodeId.ToString().Contains("mySinValue"))
+
+        if (nodeId.Contains("LampeSwitchCnt"))
         {
-            this.statusText4.text = e.Item.Value.Value?.ToString() ?? "null";
+            int switchCnt = Convert.ToInt32(e.Item.Value.Value);
+
+            mainThreadActions.Enqueue(() =>
+            {
+                OnLampSwitchCountChanged?.Invoke(roomNumber, switchCnt);
+            });
         }
-        else
+
+
+        // Function for Connection Status
+    }
+
+    // Die Trennung gehört ins Client-Skript, nicht in die Lampe!
+    void OnApplicationQuit()
+    {
+        if (this.client != null)
         {
-            Debug.Log("Data Change: " + item.NodeId + " = " + e.Item.Value);
+            this.client.Disconnect();
+            Debug.Log("OPC Client disconnected.");
         }
     }
 
+    #endregion
+    private void Client_StateChanged(object sender, OpcClientStateChangedEventArgs e)
+    {
+        // The tag property contains the previously set value.
+        OpcClient item = (OpcClient)sender;
+
+        Debug.Log((
+                    " Client_StateChange from Index {0}: {1}",
+
+
+                    item.ToString(),
+                    e.NewState.ToString(),
+                    e.OldState.ToString(),
+                    e.ToString()));
+
+        if (e.NewState == OpcClientState.Connecting)
+        {
+            Debug.Log("OPC UA Client is connecting...");
+        }
+        if (e.NewState == OpcClientState.Reconnected)
+        {
+            Debug.Log("OPC UA Client is reconnected!");
+        }
+        if (e.NewState == OpcClientState.Connected)
+        {
+            Debug.Log("OPC UA Client connected.");
+        }
+        else if (e.NewState == OpcClientState.Disconnected)
+        {
+            Debug.LogWarning("OPC UA Client disconnected.");
+        }
+        else if (e.NewState == OpcClientState.Reconnecting)
+        {
+            Debug.Log("OPC UA Client reconnecting...");
+        }
+
+        mainThreadActions.Enqueue(() =>
+        {
+            OnConnectionStatusChanged?.Invoke(e.NewState);
+        }); 
+    }
 }

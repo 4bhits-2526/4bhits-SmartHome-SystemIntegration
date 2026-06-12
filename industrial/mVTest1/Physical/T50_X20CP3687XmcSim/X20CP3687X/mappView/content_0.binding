@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BindingsSet id="content_0_binding" xmlns="http://www.br-automation.com/iat2015/binding/engineering/v2" xmlns:bt="http://www.br-automation.com/iat2015/bindingListTypes/engineering/v2" xmlns:be="http://www.br-automation.com/iat2015/bindingListEmbedded/engineering/v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Bindings>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:gVar1" attribute="node" />
+<Target xsi:type="brease" contentRefId="content_0" widgetRefId="NumericOutput1" attribute="node" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:mV_R1_Up" attribute="value" />
+<Target xsi:type="brease" contentRefId="content_0" widgetRefId="PushButton1" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:mV_R1_Down" attribute="value" />
+<Target xsi:type="brease" contentRefId="content_0" widgetRefId="PushButton2" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:mV_R2_Up" attribute="value" />
+<Target xsi:type="brease" contentRefId="content_0" widgetRefId="PushButton3" attribute="value" />
+</Binding>
+<Binding mode="twoWay">
+<Source xsi:type="opcUa" refId="::AsGlobalPV:mV_R2_Down" attribute="value" />
+<Target xsi:type="brease" contentRefId="content_0" widgetRefId="PushButton4" attribute="value" />
+</Binding>
+</Bindings>
+</BindingsSet>

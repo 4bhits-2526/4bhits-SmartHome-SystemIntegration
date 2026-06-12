@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
@@ -8,8 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TcpClientUnity : MonoBehaviour
-{
+public class TcpClientUnity : MonoBehaviour {
     [Header("UI")]
     public Text lamp1Text;
     public Text lamp2Text;
@@ -42,19 +41,9 @@ public class TcpClientUnity : MonoBehaviour
     private ConcurrentQueue<string> messageQueue =
         new ConcurrentQueue<string>();
 
-    async void Start()
-    {
+    async void Start() {
         SyncLampObjects();
         UpdateUI();
-
-        if (lamp1Text != null)
-            lamp1Text.text = "Connecting...";
-
-        if (lamp2Text != null)
-            lamp2Text.text = "Connecting...";
-
-        if (lamp3Text != null)
-            lamp3Text.text = "Connecting...";
 
         if (getStatusButton != null)
             getStatusButton.onClick.AddListener(RequestStatus);
@@ -71,81 +60,77 @@ public class TcpClientUnity : MonoBehaviour
             lamp3Toggle.onValueChanged.AddListener(
                 (val) => SendLampState(3, val));
 
-        try
-        {
+        try {
             client = new TcpClient();
-
             await client.ConnectAsync("192.168.1.61", 8000);
-
             stream = client.GetStream();
             reader = new StreamReader(stream);
 
-            Debug.Log("TCP CONNECTED");
+            Debug.Log("[TCP] Verbunden mit 192.168.1.61:8000");
 
             _ = ReadLoop();
             RequestStatus();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             errorStatus.text = GetError(e);
-            Debug.LogError("CONNECT ERROR: " + e.Message);
+            Debug.LogError("[TCP] Verbindung fehlgeschlagen: " + e.Message);
         }
     }
 
-    async Task ReadLoop()
-    {
-        try
-        {
-            while (runClient)
-            {
+    async Task ReadLoop() {
+        try {
+            while (runClient) {
                 string data = await reader.ReadLineAsync();
 
-                if (data == null)
+                if (data == null) {
+                    Debug.LogWarning("[TCP] Verbindung vom Server getrennt.");
                     break;
+                }
 
-                Debug.Log("RAW TCP: " + data);
                 messageQueue.Enqueue(data);
             }
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             errorStatus.text = GetError(e);
-            Debug.LogError("READ ERROR: " + e.Message);
+            Debug.LogError("[TCP] Lesefehler: " + e.Message);
         }
     }
 
-    void Update()
-    {
-        while (messageQueue.TryDequeue(out string msg))
-        {
+    void Update() {
+        while (messageQueue.TryDequeue(out string msg)) {
             HandleMessage(msg);
         }
     }
 
-    void HandleMessage(string msg)
-    {
+    void HandleMessage(string msg) {
         msg = msg.Trim();
 
         if (string.IsNullOrEmpty(msg))
             return;
 
-        Debug.Log("MSG: " + msg);
         HandleState(msg);
     }
 
-    void HandleState(string msg)
-    {
-        if (!TryParseStateMessage(msg, out int lampIndex, out bool value))
+    void HandleState(string msg) {
+        // Server-Broadcasts ohne Raum-Info (z.B. "True", "False") â†’ ignorieren
+        if (msg.Equals("True", StringComparison.OrdinalIgnoreCase) ||
+            msg.Equals("False", StringComparison.OrdinalIgnoreCase))
             return;
 
-        Debug.Log($"STATE UPDATE -> room{lampIndex} = {value}");
+        if (!TryParseStateMessage(msg, out int lampIndex, out bool value)) {
+            Debug.LogWarning("[TCP] Unbekannte Nachricht: " + msg);
+            return;
+        }
 
+        if (msg.Contains("LampeRT") || msg.Contains("LampeSwCnt"))
+            return;
+
+        Debug.Log($"[STATE] Lampe {lampIndex} â†’ {(value ? "EIN" : "AUS")}");
         ApplyLampState(lampIndex, value);
         UpdateUI();
     }
 
-    bool TryParseStateMessage(string msg, out int lampIndex, out bool value)
-    {
+    bool TryParseStateMessage(string msg, out int lampIndex, out bool value) {
         lampIndex = 0;
         value = false;
 
@@ -176,147 +161,93 @@ public class TcpClientUnity : MonoBehaviour
         return true;
     }
 
-    void ApplyLampState(int lampIndex, bool value)
-    {
-        switch (lampIndex)
-        {
-            case 1:
-                lamp1State = value;
-                break;
-
-            case 2:
-                lamp2State = value;
-                break;
-
-            case 3:
-                lamp3State = value;
-                break;
-
-            default:
-                return;
+    void ApplyLampState(int lampIndex, bool value) {
+        switch (lampIndex) {
+            case 1: lamp1State = value; break;
+            case 2: lamp2State = value; break;
+            case 3: lamp3State = value; break;
+            default: return;
         }
 
         SyncLampObjects();
     }
 
-    void SyncLampObjects()
-    {
+    void SyncLampObjects() {
         SetLampObjectState(0, lamp1State);
         SetLampObjectState(1, lamp2State);
         SetLampObjectState(2, lamp3State);
     }
 
-    void SetLampObjectState(int arrayIndex, bool state)
-    {
+    void SetLampObjectState(int arrayIndex, bool state) {
         if (lampObjects == null ||
             lampObjects.Length <= arrayIndex ||
             lampObjects[arrayIndex] == null)
-        {
             return;
-        }
 
         lampObjects[arrayIndex].SetActive(state);
     }
 
-    void UpdateUI()
-    {
+    void UpdateUI() {
         if (lamp1Text != null)
-            lamp1Text.text =
-                lamp1State ? "Lampe1: EIN"
-                           : "Lampe1: AUS";
+            lamp1Text.text = lamp1State ? "Lampe1: EIN" : "Lampe1: AUS";
 
         if (lamp2Text != null)
-            lamp2Text.text =
-                lamp2State ? "Lampe2: EIN"
-                           : "Lampe2: AUS";
+            lamp2Text.text = lamp2State ? "Lampe2: EIN" : "Lampe2: AUS";
 
         if (lamp3Text != null)
-            lamp3Text.text =
-                lamp3State ? "Lampe3: EIN"
-                           : "Lampe3: AUS";
+            lamp3Text.text = lamp3State ? "Lampe3: EIN" : "Lampe3: AUS";
 
         suppressToggleEvent = true;
 
-        if (lamp1Toggle != null)
-            lamp1Toggle.SetIsOnWithoutNotify(lamp1State);
-
-        if (lamp2Toggle != null)
-            lamp2Toggle.SetIsOnWithoutNotify(lamp2State);
-
-        if (lamp3Toggle != null)
-            lamp3Toggle.SetIsOnWithoutNotify(lamp3State);
+        if (lamp1Toggle != null) lamp1Toggle.SetIsOnWithoutNotify(lamp1State);
+        if (lamp2Toggle != null) lamp2Toggle.SetIsOnWithoutNotify(lamp2State);
+        if (lamp3Toggle != null) lamp3Toggle.SetIsOnWithoutNotify(lamp3State);
 
         suppressToggleEvent = false;
     }
 
-    public void ToggleLamp(int lamp)
-    {
-        bool currentState = false;
+    public void ToggleLamp(int lamp) {
+        bool currentState = lamp == 1 ? lamp1State
+                          : lamp == 2 ? lamp2State
+                          : lamp3State;
 
-        switch (lamp)
-        {
-            case 1:
-                currentState = lamp1State;
-                break;
-
-            case 2:
-                currentState = lamp2State;
-                break;
-
-            case 3:
-                currentState = lamp3State;
-                break;
-
-            default:
-                Debug.LogWarning("Invalid lamp index");
-                return;
-        }
-
-        bool newState = !currentState;
-        SendLampState(lamp, newState);
+        SendLampState(lamp, !currentState);
     }
 
-    public void RequestStatus()
-    {
-        Debug.Log("REQUEST STATUS");
+    public void RequestStatus() {
         SendMessageToServer("R");
     }
 
-    void SendLampState(int lamp, bool state)
-    {
-        if (suppressToggleEvent)
-            return;
-
+    void SendLampState(int lamp, bool state) {
         string value = state ? "True" : "False";
         string msg = $"::room{lamp}:SwitchValueGL={value}";
 
-        Debug.Log("SEND: " + msg);
+        Debug.Log($"[SEND] Lampe {lamp} â†’ {(state ? "EIN" : "AUS")}");
+
         SendMessageToServer(msg);
+        SendMessageToServer(msg);
+
+        // Server-Broadcast hat kein Raum-Prefix â†’ alle Clients manuell resyncen
+        Invoke(nameof(RequestStatus), 0.5f);
     }
 
-    public void SendMessageToServer(string msg)
-    {
-        if (client == null || !client.Connected)
-        {
-            Debug.LogWarning("TCP NOT CONNECTED");
+    public void SendMessageToServer(string msg) {
+        if (client == null || !client.Connected) {
+            Debug.LogError("[TCP] Nicht verbunden â€“ Nachricht verworfen: " + msg);
             return;
         }
 
-        try
-        {
+        try {
             byte[] data = Encoding.ASCII.GetBytes(msg + "\n");
             stream.Write(data, 0, data.Length);
         }
-        catch (Exception e)
-        {
-            Debug.LogError("SEND ERROR: " + e.Message);
+        catch (Exception e) {
+            Debug.LogError("[TCP] Sendefehler: " + e.Message);
         }
     }
 
-    void OnApplicationQuit()
-    {
+    void OnApplicationQuit() {
         runClient = false;
-
         reader?.Close();
         stream?.Close();
         client?.Close();
@@ -325,19 +256,19 @@ public class TcpClientUnity : MonoBehaviour
     string GetError(Exception e) {
         if (e is SocketException se) {
             return se.SocketErrorCode switch {
-                SocketError.ConnectionRefused   => "Verbindung abgelehnt – läuft der Server?",
-                SocketError.HostNotFound        => "Host nicht gefunden – IP-Adresse prüfen.",
-                SocketError.TimedOut            => "Verbindung abgelaufen – Netzwerk prüfen.",
-                SocketError.NetworkUnreachable  => "Netzwerk nicht erreichbar.",
+                SocketError.ConnectionRefused => "Verbindung abgelehnt â€“ lÃ¤uft der Server?",
+                SocketError.HostNotFound => "Host nicht gefunden â€“ IP-Adresse prÃ¼fen.",
+                SocketError.TimedOut => "Verbindung abgelaufen â€“ Netzwerk prÃ¼fen.",
+                SocketError.NetworkUnreachable => "Netzwerk nicht erreichbar.",
                 SocketError.AddressAlreadyInUse => "Port wird bereits verwendet.",
                 _ => $"Netzwerkfehler ({(int)se.SocketErrorCode}): {se.Message}"
             };
         }
 
         return e switch {
-            IOException      => "Fehler im Netzwerkstream.",
-            TimeoutException => "Zeitüberschreitung bei der Verbindung.",
-            _                => "Unbekannter Fehler: " + e.Message
+            IOException => "Fehler im Netzwerkstream.",
+            TimeoutException => "ZeitÃ¼berschreitung bei der Verbindung.",
+            _ => "Unbekannter Fehler: " + e.Message
         };
     }
 }

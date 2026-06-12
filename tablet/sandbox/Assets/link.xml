@@ -1,0 +1,8 @@
+<linker>
+  <assembly fullname="Opc.UaFx">
+    <type fullname="*" preserve="all"/>
+  </assembly>
+  <assembly fullname="Opc.UaFx.Client">
+    <type fullname="*" preserve="all"/>
+  </assembly>
+</linker>

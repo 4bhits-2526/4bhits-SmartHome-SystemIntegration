@@ -1,0 +1,21 @@
+VAR_CONFIG
+	::room1:Lampe AT %QX."X20DO8322".DigitalOutput01;
+	::room2:Lampe AT %QX."X20DO8322".DigitalOutput02;
+	::room3:Lampe AT %QX."X20DO8322".DigitalOutput03;
+	myDO04 AT %QX."X20DO8322".DigitalOutput04;
+	myDO05 AT %QX."X20DO8322".DigitalOutput05;
+	myDO06 AT %QX."X20DO8322".DigitalOutput06;
+	myDO07 AT %QX."X20DO8322".DigitalOutput07;
+	myDO08 AT %QX."X20DO8322".DigitalOutput08;
+	myDO09 AT %QX."X20DO8322a".DigitalOutput01;
+	myDO10 AT %QX."X20DO8322a".DigitalOutput02;
+	myDO11 AT %QX."X20DO8322a".DigitalOutput03;
+	myDO12 AT %QX."X20DO8322a".DigitalOutput04;
+	myDO13 AT %QX."X20DO8322a".DigitalOutput05;
+	myDO14 AT %QX."X20DO8322a".DigitalOutput06;
+	myDO15 AT %QX."X20DO8322a".DigitalOutput07;
+	myDO16 AT %QX."X20DO8322a".DigitalOutput08;
+	::room1:SwitchValueHW AT %IX."X20DI8371".DigitalInput01;
+	::room2:SwitchValueHW  AT %IX."X20DI8371".DigitalInput02;
+	::room3:SwitchValueHW  AT %IX."X20DI8371".DigitalInput03;
+END_VAR

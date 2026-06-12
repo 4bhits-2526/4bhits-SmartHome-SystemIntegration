@@ -1,0 +1,10 @@
+VAR
+	MpAxisBasic_0 : MpAxisBasic;
+	AxisParameters : MpAxisBasicParType;
+	McAcpAxProcessParIDType_var : {REDUND_UNREPLICABLE} McAcpAxProcessParIDType;
+	ParId719Value : UDINT;
+	MC_BR_ProcessParID_AcpAx_0 : MC_BR_ProcessParID_AcpAx;
+	MC_BR_ProcessParID_AcpAx_Exe : BOOL;
+	MC_MoveVelocity_0 : MC_MoveVelocity;
+	MC_MoveVelocity_1 : MC_MoveVelocity;
+END_VAR

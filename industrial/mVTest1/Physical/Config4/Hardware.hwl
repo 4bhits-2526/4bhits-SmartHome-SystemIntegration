@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?AutomationStudio FileVersion="4.9"?>
+<BR.AS.HardwareTopology>
+  <TimeStamps>
+    <TimeStamp LogicalPath="Config4.Hardware.hw" LastWriteTime="02/24/2026 14:40:55" />
+  </TimeStamps>
+  <Modules>
+    <Module Name="4PPC80_101E_11A" Type="4PPC80.101E-11A" X="100" Y="100" />
+    <Module Name="80VD100PD.C000-01" Type="80VD100PD.C000-01" X="295.3" Y="440.7" />
+    <Module Name="8LVA13.B1030D000-0" Type="8LVA13.B1030D000-0" X="295.3" Y="758.7" />
+    <Module Name="8LVA13.B1030D000-0a" Type="8LVA13.B1030D000-0" X="295.3" Y="624.7" />
+    <Module Name="X20BM01" Type="X20BM01" X="295.3" Y="291.7" />
+    <Module Name="X20BR9300" Type="X20BR9300" X="295.3" Y="291.7" />
+    <Module Name="X20TB12" Type="X20TB12" X="295.3" Y="318.7" />
+    <Module Name="X20BM11" Type="X20BM11" X="308.3" Y="291.7" />
+    <Module Name="X20DO8322" Type="X20DO8322" X="308.3" Y="291.7" />
+    <Module Name="X20TB12a" Type="X20TB12" X="308.3" Y="318.7" />
+  </Modules>
+  <Links>
+    <Link From="4PPC80_101E_11A" To="80VD100PD.C000-01" FromPort="IF1" ToPort="PLK1" IsRoutedByUser="False">
+      <Point X="155.65" Y="237.7" />
+      <Point X="155.65" Y="237.7" />
+      <Point X="155.65" Y="242.7" />
+      <Point X="155.65" Y="255" />
+      <Point X="365" Y="255" />
+      <Point X="365" Y="499.7" />
+      <Point X="353.3" Y="499.7" />
+      <Point X="334.3" Y="499.7" />
+      <Point X="334.3" Y="514.7" />
+    </Link>
+    <Link From="4PPC80_101E_11A" To="X20BR9300" FromPort="IF6" ToPort="X2X1" IsRoutedByUser="False">
+      <Point X="215.65" Y="237.7" />
+      <Point X="215.65" Y="237.7" />
+      <Point X="215.65" Y="242.7" />
+      <Point X="215.65" Y="335.7" />
+      <Point X="294.3" Y="335.7" />
+      <Point X="301.3" Y="335.7" />
+      <Point X="301.3" Y="335.7" />
+    </Link>
+    <Link From="80VD100PD.C000-01" To="8LVA13.B1030D000-0a" FromPort="MT1" ToPort="MT" IsRoutedByUser="False">
+      <Point X="314.3" Y="564.7" />
+      <Point X="314.3" Y="564.7" />
+      <Point X="314.3" Y="575.7" />
+      <Point X="314.3" Y="592" />
+      <Point X="344.8" Y="592" />
+      <Point X="344.8" Y="623.8" />
+      <Point X="344.8" Y="630.8" />
+      <Point X="344.8" Y="630.8" />
+    </Link>
+    <Link From="80VD100PD.C000-01" To="8LVA13.B1030D000-0" FromPort="MT2" ToPort="MT" IsRoutedByUser="False">
+      <Point X="339.3" Y="564.7" />
+      <Point X="339.3" Y="564.7" />
+      <Point X="339.3" Y="575.7" />
+      <Point X="339.3" Y="585" />
+      <Point X="375" Y="585" />
+      <Point X="375" Y="715" />
+      <Point X="344.8" Y="715" />
+      <Point X="344.8" Y="757.8" />
+      <Point X="344.8" Y="764.8" />
+      <Point X="344.8" Y="764.8" />
+    </Link>
+  </Links>
+  <InfoElements />
+</BR.AS.HardwareTopology>
