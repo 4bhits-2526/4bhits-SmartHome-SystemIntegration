@@ -279,13 +279,19 @@ public class TcpClientUnity : MonoBehaviour
     void SendLampState(int lamp, bool state)
     {
         string value = state ? "True" : "False";
-        string msg = $"::room{lamp}:SwitchValueGL={value}";
 
-        Debug.Log($"[SEND] Lampe {lamp} → {(state ? "EIN" : "AUS")}");
+        string msg =
+            $"::room{lamp}:SwitchValueGL={value}";
+
+        Debug.Log(
+            $"[SEND] Lampe {lamp} -> {(state ? "EIN" : "AUS")}");
 
         SendMessageToServer(msg);
 
-        // nur Status neu anfordern, kein lokales Update
+        // Update local state immediately so toggling/UI/visuals work
+        ApplyLampState(lamp, state);
+
+        // Optional: confirm with server shortly after
         Invoke(nameof(RequestStatus), 0.2f);
     }
 
