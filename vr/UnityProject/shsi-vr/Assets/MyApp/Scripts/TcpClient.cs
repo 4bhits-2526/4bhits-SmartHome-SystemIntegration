@@ -51,16 +51,31 @@ public class TcpClientUnity : MonoBehaviour
             getStatusButton.onClick.AddListener(RequestStatus);
 
         if (lamp1Toggle != null)
-            lamp1Toggle.onValueChanged.AddListener(
-                (val) => SendLampState(1, val));
+        {
+            lamp1Toggle.onValueChanged.AddListener((val) =>
+            {
+                if (suppressToggleEvent) return;
+                SendLampState(1, val);
+            });
+        }
 
         if (lamp2Toggle != null)
-            lamp2Toggle.onValueChanged.AddListener(
-                (val) => SendLampState(2, val));
+        {
+            lamp2Toggle.onValueChanged.AddListener((val) =>
+            {
+                if (suppressToggleEvent) return;
+                SendLampState(2, val);
+            });
+        }
 
         if (lamp3Toggle != null)
-            lamp3Toggle.onValueChanged.AddListener(
-                (val) => SendLampState(3, val));
+        {
+            lamp3Toggle.onValueChanged.AddListener((val) =>
+            {
+                if (suppressToggleEvent) return;
+                SendLampState(3, val);
+            });
+        }
 
         try
         {
@@ -205,6 +220,7 @@ public class TcpClientUnity : MonoBehaviour
         }
 
         SyncLampObjects();
+        UpdateUI();
     }
 
     void SyncLampObjects()
@@ -244,57 +260,38 @@ public class TcpClientUnity : MonoBehaviour
         suppressToggleEvent = false;
     }
 
-public void SendSwitchValue(int lamp, bool state)
-{
-    string value = state ? "True" : "False";
+    public void SendSwitchValue(int lamp, bool state)
+    {
+        string value = state ? "True" : "False";
 
-    string msg = $"::room{lamp}:SwitchValueGL={value}";
+        string msg = $"::room{lamp}:SwitchValueGL={value}";
 
-    Debug.Log($"[SEND] {msg}");
+        Debug.Log($"[SEND] {msg}");
 
-    SendMessageToServer(msg);
-}
+        SendMessageToServer(msg);
+    }
 
     public void RequestStatus()
     {
         SendMessageToServer("R");
     }
 
-void SendLampState(int lamp, bool state)
-{
-    string value;
-
-    if (state)
+    void SendLampState(int lamp, bool state)
     {
-        value = "True";
+        string value = state ? "True" : "False";
+        string msg = $"::room{lamp}:SwitchValueGL={value}";
+
+        Debug.Log($"[SEND] Lampe {lamp} → {(state ? "EIN" : "AUS")}");
+
+        SendMessageToServer(msg);
+
+        // nur Status neu anfordern, kein lokales Update
+        Invoke(nameof(RequestStatus), 0.2f);
     }
-    else
-    {
-        value = "False";
-    }
-
-    string msg = $"::room{lamp}:SwitchValueGL={value}";
-
-    string statusText;
-
-    if (state)
-    {
-        statusText = "EIN";
-    }
-    else
-    {
-        statusText = "AUS";
-    }
-
-    Debug.Log($"[SEND] Lampe {lamp} → {statusText}");
-
-    SendMessageToServer(msg);
-
-    Invoke(nameof(RequestStatus), 0.5f);
-}
 
     public void SendMessageToServer(string msg)
     {
+        SyncLampObjects();
         if (client == null || !client.Connected)
         {
             Debug.LogError("[TCP] Nicht verbunden – Nachricht verworfen: " + msg);
