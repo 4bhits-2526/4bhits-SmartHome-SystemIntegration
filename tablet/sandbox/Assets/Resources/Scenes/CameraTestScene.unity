@@ -2456,6 +2456,26 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 1.74
       objectReference: {fileID: 0}
+    - target: {fileID: 3878520015902370502, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.37
+      objectReference: {fileID: 0}
+    - target: {fileID: 4890351747198001758, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4890351747198001758, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.g
+      value: 0.9855913
+      objectReference: {fileID: 0}
+    - target: {fileID: 4890351747198001758, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4890351747198001758, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5415572077482093990, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -2464,6 +2484,34 @@ PrefabInstance:
       propertyPath: opcUaClient
       value: 
       objectReference: {fileID: 1058842962}
+    - target: {fileID: 5752186732133868574, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6364936496191434934, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_CastShadows
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426060573213119448, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426060573213119448, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426060573213119448, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426060573213119448, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6426060573213119448, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6560827801396836438, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
@@ -2472,6 +2520,38 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 9ffdee5782f720247a027f75edcb9c08, type: 2}
+    - target: {fileID: 7104333825571249143, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104333825571249143, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.g
+      value: 0.32677174
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104333825571249143, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104333825571249143, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567384937018124204, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567384937018124204, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567384937018124204, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7567384937018124204, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7572745163545913168, guid: 74984037a6d06ac41b34839f0b138314, type: 3}
       propertyPath: opcUaClient
       value: 
