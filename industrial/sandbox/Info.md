@@ -1,28 +1,18 @@
-# Systemübersicht: Eingangslogik mit OPC UA und Hardware
+# Systemübersicht: Steuerungslogik der Eingänge – FBD-Darstellung
 
 ## Beschreibung
 
-Das System besteht aus mehreren Eingangsquellen, die über unterschiedliche Wege in eine zentrale Logik (**ODER-Verknüpfung**) geführt werden.  
-Das Ergebnis steuert anschließend Aktoren im Smart Home (z. B. Lampen).
+Das System dient zur Steuerung einer Lampe über mehrere unabhängige Eingangsquellen. Jeder Eingang kann einen Toggle-Befehl auslösen, wodurch der aktuelle Zustand der Lampe umgeschaltet wird.
 
-Folgende Eingangsquellen sind integriert:
+Die Verarbeitung erfolgt zentral innerhalb der SPS (PLC). Dabei werden die Signale der verschiedenen Eingänge zusammengeführt, ausgewertet und anschließend an die Ausgänge weitergegeben.
 
-- Physische Schalter (analog / Hardware)
-- Tablet-Anwendung (Android)
-- VR-Anwendung (Android)
-- Laptop / Windows-Anwendung
-
-Alle Eingaben werden über verschiedene Kommunikationswege (z. B. OPC UA, HTTP/WebRequests oder lokale Schnittstellen) an die zentrale Logik übermittelt.
-
-Ein zentrales Ziel des Systems ist die **plattformübergreifende Synchronisation**:  
-Wird ein Zustand über eine Plattform geändert, aktualisieren sich alle anderen Plattformen automatisch.  
-Dadurch entsteht ein konsistentes Systemverhalten unabhängig vom Einstiegspunkt.
+Zusätzlich wird der aktuelle Lampenzustand an alle verbundenen Clients zurückgemeldet, sodass auf jeder Plattform jederzeit derselbe Zustand angezeigt wird.
 
 ---
 
 ## Komponenten
 
-### 1. Digitale Clients
+### 1. Eingangsquellen
 
 **Übersichtsbild:**
 
@@ -30,104 +20,168 @@ Dadurch entsteht ein konsistentes Systemverhalten unabhängig vom Einstiegspunkt
 
 *Datei: industrial/sandbox/Input_Diagramm_Ki.png*
 
-Folgende Geräte senden ihre Signale an die zentrale Logik (Kommunikationsweg in Klammern):
+Folgende Eingangsquellen sind im System vorhanden:
 
-- **Tablet (Android)** — HTTP / Web-Requests oder über ein OPC-UA-Gateway
-- **Laptop (Windows)** — OPC UA Client
-- **VR-Brille / VR-System (Android)** — HTTP / Web-Requests oder Middleware/Gateway
+| Eingangsquelle      | Kommunikationsweg | Variable          |
+| ------------------- | ----------------- | ----------------- |
+| Tablet              | OPC UA            | `xTabletToggle`   |
+| Laptop              | OPC UA            | `xLaptopToggle`   |
+| VR-Anwendung        | TCP               | `xVRToggle`       |
+| Physischer Schalter | Hardwareeingang   | `xHardwareToggle` |
 
-Hinweis: Ein nativer OPC UA Server auf Android-Geräten ist meist nicht praktikabel. Die Anbindung mobiler Geräte erfolgt daher über HTTP/Web-Requests, Middleware oder über Gateways.
+Alle Eingänge senden einen Toggle-Befehl an die SPS.
 
-Alle Clients greifen auf dieselbe zentrale Logik zu; die Kommunikation erfolgt plattformübergreifend.
+Der blaue Pfeil im Diagramm stellt den Weg des Toggle-Befehls vom Client zur SPS dar.
 
 ---
 
-
-
 ### 2. Netzwerk / Kommunikation
 
-- OPC UA für industrielle / strukturierte Kommunikation  
-- HTTP/WebRequests für mobile Anwendungen  
-- LAN-Verbindungen zwischen:
-  - Zentraler Logik (z. B. SPS/Server)
-  - OPC UA Clients
-  - Optionalen Gateways
+Zur Übertragung der Signale werden unterschiedliche Kommunikationswege verwendet:
 
-**Optionale Gateways:**
+* **OPC UA**
 
-Optionale Gateways sind Vermittler/Protokollübersetzer zwischen mobilen Geräten und der Industrie-Steuerung. Beispiele:
+  * Tablet → SPS
+  * Laptop → SPS
+  * SPS → Tablet-Anzeige
+  * SPS → Laptop-Anzeige
 
-- Ein OPC-UA-Gateway, das HTTP-Requests von Android-Clients in OPC UA-Variablen überführt
-- Ein MQTT-Broker oder eine Middleware, die Signale normalisiert und weiterleitet
-- Hardware-Protokollwandler für proprietäre Schnittstellen
+* **TCP**
 
-In unserem Projekt dienen Gateways vor allem dazu, mobile Plattformen (Tablet, VR) und die zentrale Steuerung zuverlässig zu koppeln.
+  * VR-Anwendung → SPS
+  * SPS → VR-Anzeige
+
+* **Hardwareeingang**
+
+  * Physischer Schalter → SPS
+
+Die SPS bildet die zentrale Steuerungseinheit und verarbeitet sämtliche Schaltanforderungen.
 
 ---
 
 ## Logik
 
-Jeder Eingang wird zunächst als kurzer Impuls verarbeitet. Dazu wird ein sogenannter **Puls-Trigger (P_TRIG)** verwendet, der auf steigende Zustände reagiert und einen einmaligen Impuls erzeugt.
+Jeder Eingang wird zunächst über einen **R_TRIG-Baustein (Rising Edge Trigger)** verarbeitet.
 
-Diese Impulse werden anschließend in einer zentralen **ODER-Verknüpfung (OR)** zusammengeführt.
+Der R_TRIG erkennt eine steigende Flanke (0 → 1) und erzeugt daraus einen einmaligen Impuls. Dadurch wird verhindert, dass ein dauerhaft anliegendes Signal mehrfach ausgewertet wird.
 
-- Wenn **mindestens ein Eingang einen Impuls erzeugt**, liefert die OR-Stufe einen aktiven Impuls  
-- Wenn **kein Eingang einen Impuls erzeugt**, bleibt die OR-Stufe inaktiv  
+Für jede Eingangsquelle wird ein eigener R_TRIG verwendet:
 
-Dieser kombinierte Impuls wird nicht direkt als Schaltbefehl genutzt. Stattdessen dient er als Takt für ein **T-Flipflop**.
+* R_TRIG für `xTabletToggle`
+* R_TRIG für `xLaptopToggle`
+* R_TRIG für `xVRToggle`
+* R_TRIG für `xHardwareToggle`
 
-- Jeder aktive Eingang führt zu einem Impuls an der OR-Stufe  
-- Jeder OR-Impuls toggelt den Zustand des T-Flipflops  
-- Das Flipflop speichert den aktuellen Ausgangszustand bis zum nächsten Impuls  
+Die Ausgänge aller vier R_TRIG-Bausteine werden anschließend auf eine zentrale OR-Verknüpfung geführt.
 
-### Zustandsübersicht
+### OR-Verknüpfung
 
-Direkte Eingänge / Plattformen
+Die OR-Verknüpfung besitzt vier Eingänge:
 
-| Windows (Laptop) | VR (Brille) | Tablet | Analoge Eingänge | Ausgang |
-|------------------|-------------|--------|------------------|---------|
-| 0                | 0           | 0      | 0                | 0       |
-| 1                | 0           | 0      | 0                | 1       |
-| 0                | 1           | 0      | 0                | 1       |
-| 0                | 0           | 1      | 0                | 1       |
-| 0                | 0           | 0      | 1                | 1       |
-| 1                | 1           | 0      | 0                | 1       |
-| 1                | 0           | 1      | 0                | 1       |
-| 1                | 0           | 0      | 1                | 1       |
-| 0                | 1           | 1      | 0                | 1       |
-| 0                | 1           | 0      | 1                | 1       |
-| 0                | 0           | 1      | 1                | 1       |
-| 1                | 1           | 1      | 0                | 1       |
-| 1                | 1           | 0      | 1                | 1       |
-| 1                | 0           | 1      | 1                | 1       |
-| 0                | 1           | 1      | 1                | 1       |
-| 1                | 1           | 1      | 1                | 1       |
+* IN1 = Tablet
+* IN2 = Laptop
+* IN3 = VR-Anwendung
+* IN4 = Physischer Schalter
+
+Die Funktion der OR-Verknüpfung besteht darin, alle erzeugten Impulse zu einem gemeinsamen Signal zusammenzuführen.
+
+Sobald mindestens ein Eingang einen Impuls liefert, wird der Ausgang der OR-Verknüpfung aktiv.
 
 ---
 
+## FB_Toggle (T-Flipflop)
+
+Der Ausgang der OR-Verknüpfung wird auf den Trigger-Eingang des Bausteins **FB_Toggle** geführt.
+
+Der FB_Toggle arbeitet als T-Flipflop und übernimmt die eigentliche Schaltfunktion.
+
+### Funktion
+
+Bei jedem Triggerimpuls wird der gespeicherte Ausgangszustand umgeschaltet:
+
+| Aktueller Zustand | Neuer Zustand |
+| ----------------- | ------------- |
+| 0                 | 1             |
+| 1                 | 0             |
+
+Der Zustand bleibt gespeichert, bis ein neuer Triggerimpuls eintrifft.
+
+Der Ausgang des FB_Toggle ist die Variable:
+
+`xLampOn`
+
+Diese Variable repräsentiert den aktuellen Zustand der Lampe.
+
+---
+
+## Ausgangsverarbeitung
+
+Die Variable `xLampOn` wird gleichzeitig an mehrere Ausgänge verteilt.
+
+### Physischer Ausgang
+
+* Lampe
+
+### OPC-UA-Ausgänge
+
+* Tablet-Anzeige
+* Laptop-Anzeige
+
+### TCP-Ausgang
+
+* VR-Anzeige
+
+Alle Ausgänge erhalten denselben Zustandswert.
+
+Dadurch wird sichergestellt, dass sämtliche Geräte denselben Lampenzustand anzeigen.
+
+---
+
+## Rückmeldung des Lampenzustands
+
+Neben dem Toggle-Befehl existiert ein Rückkanal für den aktuellen Lampenzustand.
+
+Der grüne Pfeil im Diagramm kennzeichnet diesen Kommunikationsweg.
+
+Über diesen Rückweg wird die Variable `xLampOn` an folgende Komponenten übertragen:
+
+* Lampe
+* Tablet-Anzeige
+* Laptop-Anzeige
+* VR-Anzeige
+
+Dadurch wird eine durchgängige Synchronisation aller Plattformen gewährleistet.
+
+---
 
 ## Ausgang
 
-Der OR-Ausgang wird nicht direkt als Schaltbefehl an die Aktoren weitergegeben. Stattdessen wird er als Takt für ein **T-Flipflop** genutzt:
+Der Ausgang der SPS wird durch die Variable `xLampOn` repräsentiert.
 
-- Jeder Eingang erzeugt einen Impuls über einen P_TRIG  
-- Die Impulse werden im OR zusammengeführt  
-- Jeder OR-Impuls toggelt das T-Flipflop  
-- Das Flipflop hält den Ausgangszustand bis zum nächsten Impuls  
+Jeder gültige Triggerimpuls eines Eingangs bewirkt:
 
-Dadurch wechselt der Ausgangszustand bei jedem aktiven Eingangssignal. Diese Logik eignet sich besonders, wenn der Schaltvorgang nicht als reines "EIN/AUS direkt vom Eingang", sondern als **Umschalten bei jeder Eingabe** gedacht ist.
+1. Erkennung der steigenden Flanke durch einen R_TRIG
+2. Weitergabe des Impulses an die OR-Verknüpfung
+3. Aktivierung des FB_Toggle
+4. Umschalten von `xLampOn`
+5. Aktualisierung der Lampe
+6. Rückmeldung des neuen Zustands an alle Clients
 
 Das T-Flipflop steuert anschließend die eigentlichen Smart-Home-Aktoren, z. B. Lampen.
 
-![Systemübersicht: Eingangslogik](new_Input_Diagramm.png)
+![Systemübersicht: Eingangslogik](Input_Diagramm_v3.png)
+
 ---
 
 ## Zusammenfassung
 
-- Mehrere Eingangsquellen (Software + Hardware)
-- Zentrale Verarbeitung über OR-Logik
-- OPC UA für strukturierte Kommunikation (v. a. Windows / industrielle Systeme)
-- Alternative Schnittstellen für mobile Geräte
-- Direkte Hardwareanbindung für physische Eingänge
-- Synchronisation aller Systeme für konsistentes Verhalten
-
+* Vier unabhängige Eingangsquellen
+* Kommunikation über OPC UA, TCP und Hardwareeingänge
+* Flankenerkennung mittels R_TRIG
+* Zusammenführung aller Eingangssignale über eine OR-Verknüpfung
+* Umschaltung des Lampenzustands über einen FB_Toggle (T-Flipflop)
+* Speicherung des Zustands in der Variablen `xLampOn`
+* Ansteuerung einer physischen Lampe
+* Rückmeldung des aktuellen Zustands an Tablet, Laptop und VR-Anwendung
+* Synchronisation aller Plattformen über die SPS
+* Trennung zwischen Toggle-Befehl (Hinweg) und Zustandsrückmeldung (Rückweg)
