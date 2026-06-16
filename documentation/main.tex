@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{geometry}
 \usepackage{booktabs}
+\usepackage{svg}
 
 \geometry{margin=2.5cm}
 
@@ -89,7 +90,7 @@ Die Steuerung basiert auf mehreren Eingängen:
     \item Tablet
     \item Laptop
     \item VR-Headset
-    \item Physischer Schalter (ROT [raum_1], BLAU [raum_2], GELB [raum\_3])
+    \item Physischer Schalter (ROT [raum\_1], BLAU [raum\_2], GELB [raum\_3])
 \end{itemize}
 
 Zwischen den Eingängen und dem Ausgang wird eine logische ODER-Verknüpfung implementiert. 
@@ -102,7 +103,7 @@ Die Kommunikation erfolgt über eine OPC-UA-Schnittstelle.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.6\textwidth]{image03.png}
+\includegraphics[width=1\textwidth]{Steuerungslogik2.0.png}
 \caption{Digitale Ein- und Ausgangskarte}
 \label{fig:digital}
 \end{figure}
@@ -115,6 +116,32 @@ Die Kommunikation erfolgt über eine OPC-UA-Schnittstelle.
 \end{figure}
 
 Die verwendete Hardware ist in Abbildung \ref{fig:digital} und \ref{fig:analog} dargestellt.
+Die Lampe soll geschaltet werden, sobald eines der verbundenen Systeme eine gültige steigende Flanke liefert. Zur Erkennung dieser Flanken wird eine positive Flankenerkennung (R\_TRIG) verwendet.
+
+\begin{verbatim}
+IF (
+    fb_RTRIG_Hardware.Q OR
+    fb_RTRIG_Tablet.Q OR
+    fb_RTRIG_Laptop.Q OR
+    fb_RTRIG_VR.Q
+) THEN
+    xLampOn := NOT(xLampOn);
+END_IF
+\end{verbatim}
+
+\subsubsection*{Erklärung der Logik}
+\begin{itemize}
+    \item \texttt{R\_TRIG} erkennt eine steigende Flanke (Signalwechsel von \texttt{FALSE} auf \texttt{TRUE}).
+    \item Dadurch wird verhindert, dass die Lampe mehrfach schaltet, solange ein Taster gedrückt bleibt.
+    \item Sobald eine gültige Flanke erkannt wird, wird der aktuelle Zustand der Lampe invertiert (getoggelt) durch den T-Flipflop.
+\end{itemize}
+
+Beispiele:
+\begin{itemize}
+    \item Lampe AUS $\rightarrow$ Lampe EIN
+    \item Lampe EIN $\rightarrow$ Lampe AUS
+\end{itemize}
+Dadurch bleibt das Verhalten auf allen Plattformen identisch.
 
 Die zuvor beschriebene Logik wird in der Industriesteuerung umgesetzt. 
 Im folgenden Kapitel wird die konkrete Konfiguration und Implementierung des Controllers detailliert beschrieben.
@@ -177,8 +204,8 @@ Dieses ermöglicht:
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{image06.png}
-\caption{Ethernet-Konfiguration}
-\label{fig:eth}
+\caption{OPC UA Netzwerkübersicht}
+\label{fig:eth2}
 \end{figure}
 
 Die Steuerung fungiert als Server, während die Anwendungen als Clients agieren.
@@ -190,9 +217,10 @@ Diese dienen der Absicherung der Kommunikation.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.6\textwidth]{image05.png}
-\caption{Ethernet-Konfiguration}
-\label{fig:eth}
+\caption{Benutzerverwaltung und Rechte}
+\label{fig:eth3}
 \end{figure}
+
 \subsection{OPC UA Daten pro Raum}
 
 Für jeden Raum werden eigene Variablen definiert, um den Zustand der Lampen zu verwalten.
@@ -213,29 +241,38 @@ Licht\_Schlafzimmer & Status der Lampe \\
 
 \subsection{Programm pro Raum}
 
-Die Steuerungslogik basiert auf einer ODER-Verknüpfung der Eingangssignale.
+Die Steuerungslogik basiert auf der Flankenauswertung der verschiedenen Eingangskanäle und einem anschließenden Toggle-Schritt.
 
 \subsubsection{Logikbeschreibung}
 
-Die Lampe wird aktiviert, wenn mindestens einer der Eingänge aktiv ist:
+Die Lampe ändert ihren Zustand, sobald ein neuer Impuls (steigende Flanke) detektiert wird. Hierzu werden alle physischen und digitalen Interaktionen überwacht:
 \begin{itemize}
-    \item physischer Schalter
-    \item Tablet
-    \item Laptop
-    \item VR-Headset
+    \item Physischer Schalter
+    \item Tablet-Eingabe via OPC UA
+    \item Laptop-Eingabe via OPC UA
+    \item VR-Headset-Eingabe via TCP
 \end{itemize}
 
-\subsubsection{Beispielhafte Implementierung}
+\subsubsection{Beispielhafte Implementierung (Strukturierter Text)}
 
 \begin{verbatim}
-IF (Schalter OR Tablet OR Laptop OR VR) THEN
-    Lampe := TRUE;
-ELSE
-    Lampe := FALSE;
-END_IF
-\end{verbatim}
+// 1. Flankenerkennung der Eingänge aktualisieren
+fb_RTRIG_Hardware(CLK := xHardwareInput);
+fb_RTRIG_Tablet(CLK := xTabletInput);
+fb_RTRIG_Laptop(CLK := xLaptopInput);
+fb_RTRIG_VR(CLK := xVRInput);
 
-Zusätzlich wird eine positive Flankenerkennung verwendet, um nur auf Zustandsänderungen zu reagieren.
+// 2. Prüfung, ob irgendeine Plattform ein Flankensignal liefert
+IF (fb_RTRIG_Hardware.Q OR 
+    fb_RTRIG_Tablet.Q OR 
+    fb_RTRIG_Laptop.Q OR 
+    fb_RTRIG_VR.Q) THEN
+    
+    // Zustand invertieren
+    xLampOn := NOT xLampOn;
+    
+END_IF;
+\end{verbatim}
 
 \subsection{Zusammenfassung}
 
