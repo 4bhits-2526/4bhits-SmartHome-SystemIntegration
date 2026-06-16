@@ -31,6 +31,12 @@ public class CheckViewController : MonoBehaviour
     private GameObject overlayRoot;
     private Button     weiterBtn;
 
+    /// <summary>
+    /// Optionaler Callback. Ist er gesetzt (z. B. vom Startfenster), kehrt der rote
+    /// Schliessen-Button dorthin zurueck, statt nur das Panel auszublenden.
+    /// </summary>
+    public Action OnRequestClose;
+
     private Image    dotOpc;
     private TMP_Text txtOpc;
     private Image    dotTablet;
@@ -179,6 +185,19 @@ public class CheckViewController : MonoBehaviour
     private void ShowPanel() => overlayRoot.SetActive(true);
     private void HidePanel() => overlayRoot.SetActive(false);
 
+    /// <summary>Oeffnet die CheckView als Vollansicht (von aussen aufrufbar).</summary>
+    public void OpenAsView() => ShowPanel();
+
+    /// <summary>
+    /// Roter Schliessen-Button: blendet das Panel aus und meldet dem aufrufenden
+    /// Fenster (falls vorhanden), dass es wieder angezeigt werden soll.
+    /// </summary>
+    private void OnCloseClicked()
+    {
+        HidePanel();
+        OnRequestClose?.Invoke();
+    }
+
     private void OnWeiterClicked()
     {
         HidePanel();
@@ -291,15 +310,15 @@ public class CheckViewController : MonoBehaviour
         pdfBtn.onClick.AddListener(OnPdfClicked);
 
         var stopBtn  = BuildButton(panel.transform, "Stop",
-                                   C_BtnRed,  -152f, -370f, 138f, 48f);
+                                   C_BtnGray, -152f, -370f, 138f, 48f);
         weiterBtn    = BuildButton(panel.transform, "Weiter  ->",
                                    C_BtnGray,    0f, -370f, 138f, 48f);
         var closeBtn = BuildButton(panel.transform, "Schliessen",
-                                   C_BtnGray,  152f, -370f, 138f, 48f);
+                                   C_BtnRed,   152f, -370f, 138f, 48f);
 
         stopBtn .onClick.AddListener(OnStopClicked);
         weiterBtn.onClick.AddListener(OnWeiterClicked);
-        closeBtn.onClick.AddListener(HidePanel);
+        closeBtn.onClick.AddListener(OnCloseClicked);
 
         return overlay;
     }
