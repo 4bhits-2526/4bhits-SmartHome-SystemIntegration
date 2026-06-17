@@ -1,0 +1,12 @@
+Plattformübergreifendes Bedienkonzept
+
+Für das Smart-Home-System wird ein plattformübergreifendes Bedienkonzept entwickelt. Das System kann über eine Windows-Anwendung, eine Android-Anwendung und eine VR-Anwendung bedient werden. Alle drei Anwendungen greifen auf dieselben Zustände des Smart-Home-Systems zu und stellen diese für die jeweilige Plattform geeignet dar.
+
+Das Bedienkonzept folgt dem Grundprinzip, dass Nutzer die Anwendung auch ohne technisches Vorwissen möglichst intuitiv verwenden können. Obwohl sich die Eingabemethoden der Plattformen unterscheiden, bleiben die grundlegenden Funktionen gleich: Räume können ausgewählt, Lichtquellen gesteuert und deren aktuelle Zustände angezeigt werden.
+
+Der zentrale Anwendungsfall ist das Ein- und Ausschalten von Lichtquellen. Bei einer Eingabe wird ein Toggle-Befehl an die gemeinsame Steuerung gesendet. Die Steuerung ändert den Zustand der jeweiligen Lampe und übermittelt den aktuellen Zustand wieder an die verbundenen Anwendungen. Dadurch soll auf allen Plattformen erkennbar sein, ob eine Lichtquelle ein- oder ausgeschaltet ist. Auch Änderungen, die über einen realen Taster am Analogmodell ausgelöst werden, sollen in den Anwendungen dargestellt werden.
+
+Die Bedienoberflächen werden mit der Unity Engine umgesetzt. Unity ermöglicht es, einen großen Teil der Anwendungslogik und der visuellen Darstellung für mehrere Plattformen gemeinsam zu entwickeln. Plattformspezifische Unterschiede werden insbesondere bei der Navigation und der Auswahl von Bedienelementen berücksichtigt.
+
+
+
