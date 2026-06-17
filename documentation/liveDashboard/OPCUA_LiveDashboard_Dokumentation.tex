@@ -1,0 +1,304 @@
+\documentclass[11pt,a4paper,parskip=half]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,margin=2.4cm,headheight=15pt]{geometry}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{primary}{HTML}{155E75}
+\definecolor{accent}{HTML}{0EA5E9}
+\definecolor{lightblue}{HTML}{E0F2FE}
+\definecolor{darktext}{HTML}{0F172A}
+\definecolor{codebg}{HTML}{F1F5F9}
+\definecolor{codeframe}{HTML}{CBD5E1}
+
+\addtokomafont{section}{\color{primary}}
+\addtokomafont{subsection}{\color{primary}}
+\setlist[itemize]{topsep=3pt,itemsep=2pt}
+\setlist[enumerate]{topsep=3pt,itemsep=3pt}
+
+\lstdefinestyle{terminal}{
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{OPC-UA-Live-Dashboard}
+\rhead{Technische Dokumentation}
+\cfoot{\thepage}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\infobox}[1]{%
+  \begin{center}
+    \fcolorbox{accent}{lightblue}{%
+      \begin{minipage}{0.91\textwidth}
+        #1
+      \end{minipage}}
+  \end{center}}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2.2cm}
+  {\color{primary}\rule{\textwidth}{1.2pt}}\\[1.1cm]
+  {\Huge\bfseries\color{primary} OPC-UA-Live-Dashboard\par}
+  \vspace{0.35cm}
+  {\Large Echtzeitvisualisierung von Steuerungs- und Sensordaten\par}
+  \vspace{1.1cm}
+  {\color{primary}\rule{\textwidth}{1.2pt}}\\[1.7cm]
+
+  \begin{tabular}{rl}
+    \textbf{Projekt:} & Smart Home -- System Integration\\
+    \textbf{Autoren:} & \\
+    \textbf{Stand:} & \today\\
+    \textbf{Dokumenttyp:} & System- und Benutzerdokumentation
+  \end{tabular}
+
+  \vfill
+  \infobox{\textbf{Kurzbeschreibung:} Das Dashboard liest Prozesswerte über OPC UA ein und stellt sie in einer Weboberfläche live dar. Dadurch können digitale Eingänge, Sensorwerte und Zustandsänderungen zentral beobachtet und analysiert werden.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Zweck der Anwendung}
+
+\subsection{Wofür wird das System verwendet?}
+
+Das OPC-UA-Live-Dashboard dient zur \textbf{Überwachung und Visualisierung von Prozesswerten}. Im Projekt werden damit beispielsweise digitale Eingänge eines Steckbretts, Temperaturwerte, Druckwerte oder Gerätezustände dargestellt. Die Bedienperson sieht im Browser sowohl den aktuellen Wert als auch dessen zeitlichen Verlauf.
+
+Typische Anwendungsfälle sind:
+
+\begin{itemize}
+  \item Kontrolle, ob ein Taster oder digitaler Eingang aktiv ist,
+  \item Beobachtung von Sensorwerten während eines Versuchs,
+  \item schnelle Fehlersuche bei einer Steuerung,
+  \item Demonstration von OPC-UA-Kommunikation im Unterricht,
+  \item Test des Dashboards mit simulierten Daten ohne reale Hardware.
+\end{itemize}
+
+\subsection{Warum wurde das System entwickelt?}
+
+Werte einer Steuerung sind ohne zusätzliche Software meist nur direkt im Entwicklungswerkzeug oder an der Hardware sichtbar. Das Dashboard macht diese Werte über eine übersichtliche Weboberfläche zugänglich. Dadurch muss für eine einfache Kontrolle nicht jedes Mal die Steuerungssoftware geöffnet werden.
+
+Die Lösung bietet insbesondere folgende Vorteile:
+
+\begin{itemize}
+  \item \textbf{Zentrale Übersicht:} Mehrere Werte werden gemeinsam angezeigt.
+  \item \textbf{Live-Aktualisierung:} Änderungen erscheinen ohne Neuladen der Webseite.
+  \item \textbf{Plattformunabhängige Anzeige:} Ein moderner Browser genügt.
+  \item \textbf{Flexible Datenquelle:} Reale Steuerung und Simulator werden unterstützt.
+  \item \textbf{Erweiterbarkeit:} Weitere OPC-UA-Knoten können ergänzt werden.
+\end{itemize}
+
+\infobox{Der Begriff \textbf{Live-Dashboard} ist hier genauer als ``Web-Tracking''. Mit Tracking ist in diesem Projekt nicht die Analyse von Webseitenbesuchern gemeint, sondern das fortlaufende Beobachten technischer Prozesswerte.}
+
+\section{Systemübersicht}
+
+Das System besteht aus vier Bereichen: Datenquelle, OPC-UA-Server, Backend und Weboberfläche. Der Browser verbindet sich nicht direkt mit OPC UA. Das Python-Backend übernimmt die Verbindung zur Steuerung und übersetzt die Daten in ein für die Webanwendung geeignetes Format.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+      node distance=8mm,
+      box/.style={draw=primary, thick, rounded corners, fill=lightblue,
+                  minimum height=13mm, text width=30mm, align=center},
+      arrow/.style={-{Latex[length=3mm]}, thick, color=accent}
+    ]
+    \node[box] (input) {Taster, Sensoren und Aktoren};
+    \node[box, right=of input] (opc) {Steuerung / OPC-UA-Server};
+    \node[box, right=of opc] (backend) {FastAPI-Backend};
+    \node[box, right=of backend] (frontend) {React-Dashboard im Browser};
+
+    \draw[arrow] (input) -- node[above, font=\scriptsize]{E/A-Werte} (opc);
+    \draw[arrow] (opc) -- node[above, font=\scriptsize]{OPC UA} (backend);
+    \draw[arrow] (backend) -- node[above, font=\scriptsize]{WebSocket} (frontend);
+  \end{tikzpicture}
+  \caption{Vereinfachter Kommunikationsweg}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Aufgaben der Komponenten}
+
+\begin{tabularx}{\textwidth}{@{}p{3.6cm}X@{}}
+  \toprule
+  \textbf{Komponente} & \textbf{Aufgabe}\\
+  \midrule
+  Taster und Sensoren & Erzeugen digitale oder analoge Eingangswerte.\\
+  Steuerung / Simulator & Stellt Variablen über einen OPC-UA-Endpunkt bereit.\\
+  FastAPI-Backend & Verbindet sich als OPC-UA-Client, abonniert passende Knoten und sammelt deren Werte.\\
+  WebSocket & Überträgt die aktuellen Daten fortlaufend vom Backend an alle verbundenen Browser.\\
+  React-Frontend & Stellt Werte, Status, Einschaltdauer und einen kurzen Verlauf als Widgets dar.\\
+  \bottomrule
+\end{tabularx}
+
+\section{Technischer Ablauf}
+
+\subsection{Erfassung der Werte}
+
+Ein Taster sendet nicht selbstständig Daten über OPC UA. Stattdessen liest die Steuerung den elektrischen Zustand des Tasters ein. Die zugehörige Variable wird anschließend vom OPC-UA-Server der Steuerung bereitgestellt.
+
+Das Backend durchsucht den Objektbaum des OPC-UA-Servers. Knoten mit passenden Bezeichnungen, beispielsweise \code{input}, \code{x20}, \code{temperature}, \code{pressure} oder \code{valve}, werden abonniert. Die Subscription ist im aktuellen Programm mit einem Intervall von 100\,ms angelegt.
+
+\subsection{Übertragung zum Browser}
+
+Wird eine Wertänderung gemeldet, speichert das Backend den aktuellen Wert. Zusätzlich wird für Werte mit dem Zustand \code{1} die aktive Zeit in Millisekunden aufsummiert. Etwa alle 200\,ms sendet das Backend folgende Datenstruktur über WebSocket an die verbundenen Browser:
+
+\begin{lstlisting}[style=terminal,language={},caption={Vereinfachte WebSocket-Nachricht}]
+{
+  "channels": {
+    "ns=2;i=2": 1,
+    "ns=2;i=3": 22.7
+  },
+  "on_times": {
+    "ns=2;i=2": 1540
+  }
+}
+\end{lstlisting}
+
+Die Weboberfläche aktualisiert ihre Widgets unmittelbar nach dem Empfang. Ein manuelles Neuladen der Seite ist nicht erforderlich.
+
+\subsection{Ablauf in acht Schritten}
+
+\begin{enumerate}
+  \item Ein Taster wird betätigt oder ein Sensorwert ändert sich.
+  \item Die Steuerung aktualisiert die zugehörige Prozessvariable.
+  \item Der OPC-UA-Server stellt den neuen Wert bereit.
+  \item Das FastAPI-Backend erhält die Änderung über seine OPC-UA-Subscription.
+  \item Das Backend aktualisiert Wert und Einschaltdauer.
+  \item Die Daten werden über WebSocket an den Browser übertragen.
+  \item Das React-Frontend aktualisiert das betroffene Widget.
+  \item Die Bedienperson sieht Status und Verlauf nahezu in Echtzeit.
+\end{enumerate}
+
+\section{Weboberfläche}
+
+\subsection{Verbindungsstatus}
+
+Im Kopfbereich zeigt das Dashboard den Zustand der WebSocket-Verbindung an. Mögliche Anzeigen sind \code{Connected}, \code{Connecting}, \code{Disconnected} und \code{Error connecting}. Das Frontend versucht standardmäßig die Backend-Ports 8000 und 9001.
+
+\subsection{Sensorauswahl}
+
+Über das Seitenmenü können verfügbare OPC-UA-Knoten als Widgets hinzugefügt oder entfernt werden. Die Auswahl sowie die eingetragene OPC-UA-Adresse werden im lokalen Speicher des Browsers gespeichert.
+
+\subsection{Widgets und Detailansicht}
+
+Ein Widget zeigt:
+
+\begin{itemize}
+  \item den Namen beziehungsweise die Node-ID,
+  \item den aktuellen numerischen Wert,
+  \item den Zustand \code{ON} oder \code{OFF},
+  \item die aufsummierte \code{ON Time} in Millisekunden,
+  \item optional Statistik und grafischen Verlauf.
+\end{itemize}
+
+Der Verlauf enthält die letzten 30 vom Browser empfangenen Werte. Für die Statusanzeige gilt ein Wert von \code{1} als \code{ON}; andere Werte werden als \code{OFF} behandelt. Analoge Messwerte werden dennoch numerisch im Widget angezeigt.
+
+\section{Inbetriebnahme}
+
+\subsection{Voraussetzungen}
+
+Benötigt werden:
+
+\begin{itemize}
+  \item Python 3 mit \code{fastapi}, \code{uvicorn}, \code{asyncua} und \code{pydantic},
+  \item Node.js und npm,
+  \item ein OPC-UA-Server oder der mitgelieferte Simulator,
+  \item ein aktueller Webbrowser.
+\end{itemize}
+
+Alle folgenden Befehle werden im Ordner \code{opc-dashboard} ausgeführt. Für Simulator, Backend und Frontend wird jeweils ein eigenes Terminal verwendet.
+
+\subsection{Variante A: Betrieb mit Simulator}
+
+\textbf{1. Python-Abhängigkeiten installieren:}
+
+\begin{lstlisting}[style=terminal]
+python -m pip install fastapi uvicorn asyncua pydantic
+\end{lstlisting}
+
+\textbf{2. OPC-UA-Simulator starten:}
+
+\begin{lstlisting}[style=terminal]
+python opcua_simulator.py
+\end{lstlisting}
+
+Der Simulator verwendet standardmäßig \code{opc.tcp://127.0.0.1:4843}. Ist der Port belegt, wählt er automatisch einen freien Port. Die gewählte Adresse wird in \code{opcua\_simulator\_config.json} gespeichert und vom Backend gelesen.
+
+\textbf{3. Backend starten:}
+
+\begin{lstlisting}[style=terminal]
+python -m uvicorn backend.main:app --reload --port 8000
+\end{lstlisting}
+
+\textbf{4. Frontend installieren und starten:}
+
+\begin{lstlisting}[style=terminal]
+npm install
+npm run dev
+\end{lstlisting}
+
+Anschließend wird die von Vite angezeigte Adresse, üblicherweise \code{http://localhost:5173}, im Browser geöffnet.
+
+\subsection{Variante B: Verbindung mit einer realen Steuerung}
+
+Zuerst werden Backend und Frontend wie oben beschrieben gestartet. Danach wird im Seitenmenü die OPC-UA-Adresse der Steuerung eingetragen, zum Beispiel:
+
+\begin{lstlisting}[style=terminal]
+opc.tcp://192.168.1.61:4840
+\end{lstlisting}
+
+Mit \textbf{Connect} wird das Backend auf die neue Adresse umgestellt. Rechner und Steuerung müssen sich gegenseitig über das Netzwerk erreichen können. Firewalls müssen die verwendeten Ports zulassen.
+
+\section{Fehlerbehebung}
+
+\begin{tabularx}{\textwidth}{@{}p{4.4cm}X@{}}
+  \toprule
+  \textbf{Problem} & \textbf{Mögliche Ursache und Lösung}\\
+  \midrule
+  Dashboard zeigt \code{Disconnected} & Backend läuft nicht oder Port 8000/9001 ist blockiert. Backend starten und Firewall prüfen.\\
+  Keine Sensoren sichtbar & OPC-UA-Server ist nicht erreichbar, die Adresse ist falsch oder Knotennamen passen nicht zum Filter des Backends.\\
+  Werte ändern sich nicht & Verbindung zur Steuerung und Aktualisierung der Prozessvariablen prüfen. Beim Test mit Simulator dessen Terminalausgabe kontrollieren.\\
+  \code{Connect} funktioniert nicht & Das Frontend sendet die Umschaltung derzeit an Port 8000. Das Backend sollte daher auf Port 8000 laufen.\\
+  Analoger Wert zeigt \code{OFF} & Die ON/OFF-Anzeige ist für digitale Werte ausgelegt. Der tatsächliche analoge Wert wird weiterhin numerisch angezeigt.\\
+  \bottomrule
+\end{tabularx}
+
+\section{Grenzen und Sicherheit}
+
+Die aktuelle Implementierung ist ein Prototyp für Entwicklung, Unterricht und ein kontrolliertes lokales Netzwerk. Vor einem produktiven Einsatz sind insbesondere folgende Punkte zu beachten:
+
+\begin{itemize}
+  \item Das Backend erlaubt derzeit CORS-Zugriffe von allen Ursprüngen.
+  \item Im Programm ist keine Anmeldung für Dashboard oder WebSocket vorgesehen.
+  \item Die OPC-UA-Verbindung verwendet in der aktuellen Form keine konfigurierte Zertifikatsprüfung.
+  \item Die Verlaufsdaten werden nur im Arbeitsspeicher des Browsers gehalten und nicht dauerhaft gespeichert.
+  \item Bei einem Neustart des Backends gehen die aufsummierten Einschaltdauern verloren.
+  \item Für Zugriff außerhalb des lokalen Netzes sind Authentifizierung, TLS und restriktive Firewall-Regeln erforderlich.
+\end{itemize}
+
+\section{Zusammenfassung}
+
+Das OPC-UA-Live-Dashboard macht technische Prozesswerte einfach im Browser sichtbar. Die Steuerung oder der Simulator stellt Variablen über OPC UA bereit. Das FastAPI-Backend abonniert diese Werte und überträgt sie per WebSocket an die React-Oberfläche. Dort können aktuelle Werte, digitale Zustände, Einschaltdauer und ein kurzer Verlauf beobachtet werden.
+
+Die Trennung zwischen OPC-UA-Kommunikation und Weboberfläche ist dabei wesentlich: Das Backend übernimmt die industrielle Kommunikation, während der Browser ausschließlich die aufbereiteten Daten darstellt. Dadurch bleibt das System verständlich, testbar und später erweiterbar.
+
+\end{document}
