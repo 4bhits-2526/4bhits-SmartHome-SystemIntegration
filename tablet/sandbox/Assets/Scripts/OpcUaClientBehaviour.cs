@@ -35,9 +35,9 @@ public class OpcUaClientBehaviour : MonoBehaviour
         {
 
             // Nur fürs builden auskommentieren! Sonst fatal error auf PC
-            // string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
-            // Directory.CreateDirectory(certFolder);
-            //Environment.CurrentDirectory = certFolder;
+            /* string certFolder = Path.Combine(Application.persistentDataPath, "OPC");
+            Directory.CreateDirectory(certFolder);
+            Environment.CurrentDirectory = certFolder; */
 
             this.isConnecting = true;
 
