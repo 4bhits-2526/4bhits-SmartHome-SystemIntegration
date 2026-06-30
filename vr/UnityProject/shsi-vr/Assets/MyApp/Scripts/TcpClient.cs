@@ -120,6 +120,7 @@ public class TcpClientUnity : MonoBehaviour
         }
     }
 
+
     void Update()
     {
         while (messageQueue.TryDequeue(out string msg))
@@ -269,11 +270,15 @@ public class TcpClientUnity : MonoBehaviour
         Debug.Log($"[SEND] {msg}");
 
         SendMessageToServer(msg);
+        RequestStatus();
+        Invoke(nameof(SyncLampObjects), 0.1f);
     }
+
 
     public void RequestStatus()
     {
         SendMessageToServer("R");
+
     }
 
     void SendLampState(int lamp, bool state)
