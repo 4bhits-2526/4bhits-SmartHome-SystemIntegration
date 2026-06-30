@@ -188,15 +188,19 @@ public class TcpClientUnity : MonoBehaviour
             lampIndex = 2;
         else if (path.Contains("room3", StringComparison.OrdinalIgnoreCase))
             lampIndex = 3;
-        else
+        else {
+            Debug.LogError("DU BIST GUT GENUG❤️");
             return false;
+        }
 
         if (val.Equals("True", StringComparison.OrdinalIgnoreCase))
             value = true;
         else if (val.Equals("False", StringComparison.OrdinalIgnoreCase))
             value = false;
-        else
+        else {
+            Debug.LogError("DU BIST GUT GENUG❤️");
             return false;
+        }
 
         return true;
     }
