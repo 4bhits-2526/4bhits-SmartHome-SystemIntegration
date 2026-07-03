@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class TabletLookController : MonoBehaviour
 {
+    [Header("References")]
     public Camera playerCamera;
 
     [Header("Look Settings")]
@@ -10,52 +10,87 @@ public class TabletLookController : MonoBehaviour
     public float maxLookAngle = 80f;
     public bool invertY = false;
 
-    private float yaw = 0f;
-    private float pitch = 0f;
+    [Header("Debug")]
+    [Tooltip("Ignoriert die erste Bewegung nach dem Aufsetzen des Fingers.")]
+    public bool ignoreFirstMove = true;
 
-    void Start()
+    private float yaw;
+    private float pitch;
+
+    private int activeFingerId = -1;
+    private bool skipNextMove;
+
+    private void Start()
     {
-        // Wichtig für UI + Touch
+        // Für Tablet / Touch
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        // Aktuelle Rotation übernehmen, damit es keinen Sprung beim Start gibt
+        yaw = transform.localEulerAngles.y;
+
+        pitch = playerCamera.transform.localEulerAngles.x;
+
+        // Unity speichert Winkel von 0–360°
+        if (pitch > 180f)
+            pitch -= 360f;
     }
 
-    void Update()
+    private void Update()
     {
         HandleTouchLook();
     }
 
-    void HandleTouchLook()
+    private void HandleTouchLook()
     {
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(0))
-            return;
-        // Nur wenn genau ein Finger auf dem Bildschirm ist
-        if (Input.touchCount == 1)
+        if (Input.touchCount != 1)
         {
-            Touch touch = Input.GetTouch(0);
+            activeFingerId = -1;
+            return;
+        }
 
-            // ❗ Verhindert Kamera-Drehung wenn UI gedrückt wird
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(0))
-                return;
+        Touch touch = Input.GetTouch(0);
 
-            if (touch.phase == TouchPhase.Moved)
-            {
+        switch (touch.phase)
+        {
+            case TouchPhase.Began:
+                activeFingerId = touch.fingerId;
+                skipNextMove = ignoreFirstMove;
+                break;
+
+            case TouchPhase.Moved:
+
+                if (touch.fingerId != activeFingerId)
+                    return;
+
+                // Erstes Moved-Event ignorieren
+                if (skipNextMove)
+                {
+                    skipNextMove = false;
+                    return;
+                }
+
                 float touchX = touch.deltaPosition.x * sensitivity;
                 float touchY = touch.deltaPosition.y * sensitivity;
 
                 yaw += touchX;
 
-                if (!invertY)
-                    pitch -= touchY;
-                else
+                if (invertY)
                     pitch += touchY;
+                else
+                    pitch -= touchY;
 
                 pitch = Mathf.Clamp(pitch, -maxLookAngle, maxLookAngle);
 
-                // Rotation anwenden
-                transform.localEulerAngles = new Vector3(0f, yaw, 0f);
-                playerCamera.transform.localEulerAngles = new Vector3(pitch, 0f, 0f);
-            }
+                transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
+                playerCamera.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+
+                break;
+
+            case TouchPhase.Ended:
+            case TouchPhase.Canceled:
+                activeFingerId = -1;
+                break;
         }
     }
 }
